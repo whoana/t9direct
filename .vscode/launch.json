@@ -1,0 +1,87 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Launch Library",
+            "request": "launch",
+            "mainClass": "rose.mary.trace.core.Library",
+            "projectName": "t9-trace"
+        },
+        {
+            "type": "java",
+            "name": "Launch InstallManager",
+            "request": "launch",
+            "mainClass": "rose.mary.trace.support.install.InstallManager",
+            "projectName": "t9-console"
+        },
+        {
+            "type": "java",
+            "name": "Launch DeadLockThreadTest",
+            "request": "launch",
+            "mainClass": "rose.mary.trace.testcode.DeadLockThreadTest",
+            "projectName": "t9-trace"
+        },
+        {
+            "type": "java",
+            "name": "Launch Java Program",
+            "request": "launch",
+            "mainClass": "rose.mary.trace.testcode.CacheSizeChecker",
+            "projectName": "t9-trace",
+            "vmArgs": "-Drose.mary.home=/Users/whoana/DEV/workspace-vs-refactoring/t9/home"
+        },
+        {
+            "type": "java",
+            "name": "Launch MQChannelTest",
+            "request": "launch",
+            "mainClass": "rose.mary.trace.testcode.MQChannelTest",
+            "projectName": "t9-trace",
+            "vmArgs": "-Drose.mary.home=/Users/whoana/DEV/workspace-vs-refactoring/t9/home"
+        },
+        {
+            "type": "java",
+            "name": "Launch KillTest",
+            "request": "launch",
+            "mainClass": "rose.mary.trace.testcode.KillTest",
+            "projectName": "t9-trace",
+            "vmArgs": "-Drose.mary.home=/Users/whoana/DEV/workspace-vs-refactoring/t9/home"
+        },
+        {
+            "type": "java",
+            "name": "Launch Node",
+            "request": "launch",
+            "mainClass": "rose.mary.trace.core.data.common.Node",
+            "projectName": "t9-trace"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-T9<t9-trace>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "rose.mary.trace.T9",
+            "projectName": "t9-trace",
+            "args": "",
+            "vmArgs": [
+                "-Drose.mary.home=/Users/whoana/DEV/workspace-vs-refactoring/t9/home",
+                "-Dspring.profiles.active=production",
+                "-Dspring.config.location=/Users/whoana/DEV/workspace-vs-refactoring/t9/home/config/application.yml"
+            ],
+            "envFile": "${workspaceFolder}/.env"
+        }
+        ,
+        {
+            "type": "java",
+            "name": "T9App",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "rose.mary.trace.T9",
+            "projectName": "t9-trace",
+            "args": "",
+            "vmArgs": [
+                "-Drose.mary.home=/Users/whoana/DEV/workspace-vs-refactoring/t9/app",
+                "-Dspring.profiles.active=production",
+                "-Dspring.config.location=/Users/whoana/DEV/workspace-vs-refactoring/t9/app/config/application.yml"
+            ],
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

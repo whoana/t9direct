@@ -1,0 +1,26 @@
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build
+bin
+/home/logs
+/home/caches
+/home/iwannadie.pid
+t9-install-linux
+t9-install-linux/lib
+t9-install-widows
+t9-install-linux.zip
+
+home/lib/t9-console-1.0.0.jar
+home/lib/t9-trace-1.0.0.jar
+home/caches.tar
+t9home/install.txt
+t9home/quickstart.txt
+t9home/t9-install.log
+t9home/config/application.yml
+t9home/config/config.json
+t9home/config/logback-spring.xml
+t9home/config/sqlerror.json
+t9home/lib/t9-console-1.0.0.jar
+t9home/lib/t9-trace-1.0.0.jar

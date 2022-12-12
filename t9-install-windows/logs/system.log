@@ -1,0 +1,4 @@
+20-07 14:05:21 INFO  InterfaceCacheManager.refresh - start refreshing interface cache
+20-07 14:05:22 INFO  InterfaceCacheManager.refresh - end refreshing interface cache
+20-07 14:05:23 INFO  InterfaceCacheManager$1.run - start caching interface info
+20-07 14:05:23 INFO  InterfaceCacheManager$1.run - end caching interface info(caching count:5)
