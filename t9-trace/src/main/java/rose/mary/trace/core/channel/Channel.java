@@ -67,8 +67,6 @@ public abstract class Channel implements Runnable {
 
 	String name;
 
-	ChannelWriter channelWriter;
-
 	protected boolean healthCheck = false;
 
 	long delayOnException = 5000;
@@ -93,7 +91,6 @@ public abstract class Channel implements Runnable {
 		this.delayForNoMessage = delayForNoMessage;
 		this.delayOnException = delayOnException;
 		this.cache = cache;
-		// if(!autoCommit) channelWriter = new ChannelWriter(this);
 	}
 
 	protected abstract Object trace() throws Exception;

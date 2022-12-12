@@ -114,7 +114,7 @@
 		"translateMsgOnException": false
 	},
 	"cacheManagerConfig": {
-		"vendor": "infinispan",
+		"vendor": "java",
 		"diskPath": "caches",
 		"persistant": true,
 		"checkSizeDelay": 1000,

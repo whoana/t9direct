@@ -4,6 +4,7 @@
 package rose.mary.trace.core.simulator;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -94,17 +95,24 @@ public class TraceMsgGenerator {
 
 	public void initialize() throws Exception {
 
-		if (interfaceCache != null) {
-			Iterator<?> iterator = interfaceCache.iterator();
+		// if (interfaceCache != null) {
+		// Iterator<?> iterator = interfaceCache.iterator();
 
-			iterator.forEachRemaining(new Consumer<Object>() {
-				@Override
-				public void accept(Object entry) {
-					InterfaceInfo interfaceInfo = interfaceCache.getValue(entry);
-					interfaceList.add(interfaceInfo.getIntegrationId());
-					// iterator.remove();
-				}
-			});
+		// iterator.forEachRemaining(new Consumer<Object>() {
+		// @Override
+		// public void accept(Object entry) {
+		// InterfaceInfo interfaceInfo = interfaceCache.getValue(entry);
+		// interfaceList.add(interfaceInfo.getIntegrationId());
+		// // iterator.remove();
+		// }
+		// });
+		// }
+
+		if (interfaceCache != null) {
+			Collection<InterfaceInfo> interfaces = interfaceCache.values();
+			for (InterfaceInfo interfaceInfo : interfaces) {
+				interfaceList.add(interfaceInfo.getIntegrationId());
+			}
 		}
 
 		if (interfaceList.size() > 0)

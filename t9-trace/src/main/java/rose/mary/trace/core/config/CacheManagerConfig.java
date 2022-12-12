@@ -24,6 +24,8 @@ public class CacheManagerConfig {
 
 	public static final String VENDOR_CHRONICLE = "chronicle";
 
+	public static final String VENDOR_NATIVE = "java";
+
 	String vendor = VENDOR_INFINISPAN;
 
 	String diskPath;

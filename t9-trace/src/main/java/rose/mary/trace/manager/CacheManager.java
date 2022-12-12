@@ -17,6 +17,7 @@ import rose.mary.trace.core.cache.CacheProxy;
 import rose.mary.trace.core.cache.chronicle.ChronicleCacheManagerProxy;
 import rose.mary.trace.core.cache.ehcache.EhcacheManagerProxy;
 import rose.mary.trace.core.cache.infinispan.InfinispanCacheManagerProxy;
+import rose.mary.trace.core.cache.java.JavaCacheManagerProxy;
 import rose.mary.trace.core.config.CacheManagerConfig;
 import rose.mary.trace.core.data.common.InterfaceInfo;
 import rose.mary.trace.core.data.common.State;
@@ -81,6 +82,8 @@ public class CacheManager {
 			cmp = new InfinispanCacheManagerProxy(cacheManagerConfig);
 		} else if (CacheManagerConfig.VENDOR_CHRONICLE.equalsIgnoreCase(cacheManagerConfig.getVendor())) {
 			cmp = new ChronicleCacheManagerProxy(cacheManagerConfig);
+		} else if (CacheManagerConfig.VENDOR_NATIVE.equalsIgnoreCase(cacheManagerConfig.getVendor())) {
+			cmp = new JavaCacheManagerProxy(cacheManagerConfig);
 		} else {
 			throw new NotYetImplementedException();
 		}

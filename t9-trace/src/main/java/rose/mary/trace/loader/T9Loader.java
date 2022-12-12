@@ -15,7 +15,6 @@ import rose.mary.trace.core.exception.HaveNoTraceInfoException;
 import rose.mary.trace.core.exception.NoMoreMessageException;
 import rose.mary.trace.core.exception.RequiredFieldException;
 import rose.mary.trace.core.exception.ZeroLengthMessageException;
-import rose.mary.trace.core.helper.checker.StateCheckerMap;
 import rose.mary.trace.core.helper.module.mte.ILinkMsgHandler;
 import rose.mary.trace.core.helper.module.mte.MQMsgHandler;
 import rose.mary.trace.core.helper.module.mte.MsgHandler;
@@ -178,8 +177,7 @@ public class T9Loader implements Runnable {
 
     private void initialize() throws Exception {
         if (MsgHandler.MODULE_MQ.equalsIgnoreCase(module)) {
-            mh = new MQMsgHandler(qmgrName, hostName, port, channelName, userId, password, ccsid, characterSet,
-                    autoCommit, bindMode);
+            mh = new MQMsgHandler(qmgrName, hostName, port, channelName, userId, password, ccsid, characterSet, autoCommit, bindMode);
         } else if (MsgHandler.MODULE_ILINK.equalsIgnoreCase(module)) {
             mh = new ILinkMsgHandler(qmgrName, hostName, port, channelName);
         } else {
@@ -193,6 +191,7 @@ public class T9Loader implements Runnable {
         isShutdown = true;
         if (thread != null) {
             try {
+                thread.interrupt();
                 thread.join();
             } catch (InterruptedException e) {
                 logger.error("", e);
@@ -273,35 +272,7 @@ public class T9Loader implements Runnable {
                             break;
                         }
                     }
-/* 
-                    // 4 change State
-                    // 5 cacheing State
-                    // 6 add State to list for loading to db TOP0503
-                    {
-                        String botId = Util.join(trace.getIntegrationId(), "@", trace.getDate(), "@",
-                                trace.getOriginHostId());
-                        State state = finCache.get(botId);
-                        boolean first = false;
-                        if (state == null) {
-                            long currentDate = System.currentTimeMillis();
-                            state = new State();
-                            state.setCreateDate(currentDate);
-                            state.setBotId(botId);
-                            first = true;
-                        }
 
-                         
-                        StateCheckerMap.map.get(trace.getStateCheckHandlerId()).checkAndSet(first, trace, state);
-                       
-                        logger.info(Util.join(botId, ",status:", state.getStatus(), ", type:", trace.getType()));
-                        
-                        if (!state.skip()) {
-                            state.setLoaded(false);
-                            finCache.put(botId, state);
-                            stateList.add(state);
-                        }
-                    }
-*/
 
                     {
                         stateHandler.handleState(trace, stateList);
@@ -405,8 +376,11 @@ public class T9Loader implements Runnable {
     // 5 commit mom
     private void commit() throws Exception {
         int count = traceList.size();
-        traceLoadService.load(traceList, loadError, loadContents);
-        botService.mergeBots(stateList, finCache);
+        
+        // traceLoadService.load(traceList, loadError, loadContents);
+        // botService.mergeBots(stateList, finCache);
+        botService.mergeBots(traceList, loadError, loadContents, stateList, finCache);
+
         traceList.clear();
         stateList.clear();
         mh.commit();

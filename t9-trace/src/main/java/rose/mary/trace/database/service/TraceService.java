@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import rose.mary.trace.core.cache.CacheProxy;
+import rose.mary.trace.core.data.common.State;
 import rose.mary.trace.core.data.common.Trace;
 import rose.mary.trace.database.mapper.m01.TraceMapper;
 
@@ -99,4 +101,54 @@ public class TraceService {
 	public List<Trace> getTraces(String integrationId, String trackingDate, String orgHostId) throws Exception {
 		return traceMapper.getList(integrationId, trackingDate, orgHostId);
 	}
+
+
+
+
+
+	public void load(Collection<Trace> col, boolean loadError, boolean loadContents, Collection<State> states, CacheProxy<String, State> finCache) throws Exception {
+		boolean autoCommit = false;
+		SqlSession session = null;
+		List<BatchResult> bs = null;
+		try {
+			session = sqlSessionFactory.openSession(ExecutorType.BATCH, autoCommit);
+
+			for (Trace trace : col) {
+				// int res =
+				// session.insert("rose.mary.trace.database.mapper.m01.TraceMapper.insert",
+				// trace);
+				int res = session.insert("rose.mary.trace.database.mapper.m01.TraceMapper.upsert", trace);
+
+				// if(loadError) {
+				// session.insert("rose.mary.trace.database.mapper.m01.TraceMapper.insertError",
+				// trace);
+				// }
+				//
+				// if(loadContents) {
+				// session.insert("rose.mary.trace.database.mapper.m01.TraceMapper.insertContents",
+				// trace);
+				// }
+			}
+
+			bs = session.flushStatements();
+
+			session.commit();
+		} catch (Exception e) {
+
+			if (bs != null && bs.size() > 0) {
+				for (BatchResult rs : bs) {
+					int uc = rs.getUpdateCounts()[0];
+					// session.delete(rs.getSql(), rs.getParameterObjects());
+					logger.info("sql:" + rs.getSql() + ", mappedStatement:" + rs.getMappedStatement() + ", pdateCounts:"
+							+ uc);
+				}
+			}
+			session.rollback();
+			throw e;
+		} finally {
+			if (session != null)
+				session.close();
+		}
+	}
+
 }

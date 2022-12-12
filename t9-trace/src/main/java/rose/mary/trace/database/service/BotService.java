@@ -21,6 +21,7 @@ import rose.mary.trace.core.cache.CacheProxy;
 import rose.mary.trace.core.data.common.Bot;
 import rose.mary.trace.core.data.common.InterfaceInfo;
 import rose.mary.trace.core.data.common.State;
+import rose.mary.trace.core.data.common.Trace;
 import rose.mary.trace.core.data.common.Unmatch;
 import rose.mary.trace.database.mapper.m01.BotMapper;
 import rose.mary.trace.manager.CacheManager;
@@ -160,6 +161,92 @@ public class BotService {
 				session.close();
 		}
 	}
+
+	public void mergeBots(Collection<Trace> col, boolean loadError, boolean loadContents, Collection<State> states, CacheProxy<String, State> finCache) throws Exception {
+
+		boolean autoCommit = false;
+		SqlSession session = null;
+		try {
+			session = sqlSessionFactory.openSession(ExecutorType.BATCH, autoCommit);
+			// 20220825
+			// 처리 속도 향상을 위해 한번만 실행하는 것으로 함 정확한 로킹을 위해서는 for 안으로 이동 필요함.
+			String date = Util.getFormatedDate(Util.DEFAULT_DATE_FORMAT_MI);
+			Map<String, State> updateStates = new HashMap<String, State>();
+			for (State state : states) {
+				// String date = Util.getFormatedDate(Util.DEFAULT_DATE_FORMAT_MI);
+				Bot bot = new Bot();
+				InterfaceInfo interfaceInfo = cacheManager.getInterfaceCache().get(state.getIntegrationId());
+				if (interfaceInfo == null) {
+					// 매치되는 것이 없으면 TOP0503에는 저장하지 않는다.
+					// 대신 UnmatchCache 에 integrationId 를 키값으로 Unmatch 오브젝트를 등록해 둔다.
+
+					// 저장 하려면 아래 로직으로 임시인터페이스 정보를 만들어 등록하도록 처리할 수 있다.(보류)
+					// interfaceInfo = new InterfaceInfo();
+					// interfaceInfo.setInterfaceId(state.getIntegrationId());
+					// interfaceInfo.setIntegrationId(state.getIntegrationId());
+					// interfaceInfo.setInterfaceNm(NOT_MATCH_NM);
+
+					state.setMatch(State.MATCH_NO);
+					state.setRegDate(date);
+					state.setModDate(date);
+
+					Unmatch unmatch = cacheManager.getUnmatchCache().get(state.getIntegrationId());
+					if (unmatch == null) {
+						unmatch = new Unmatch();
+						unmatch.setIntegrationId(state.getIntegrationId());
+						unmatch.setMatch(State.MATCH_NO);
+						unmatch.setRegDate(date);
+					} else {
+						unmatch.setModDate(date);
+					}
+					cacheManager.getUnmatchCache().put(state.getIntegrationId(), unmatch);
+
+				} else {
+					state.setMatch(State.MATCH_YES);
+					bot.setState(state);
+					bot.setInterfaceInfo(interfaceInfo);
+					bot.setRegDate(date);
+					bot.setModDate(date);
+					// logger.debug("add batchItem:" + Util.toJSONString(bot));
+					int res = session.update("rose.mary.trace.database.mapper.m01.BotMapper.restore", bot);
+				}
+				state.setLoaded(true);
+				updateStates.put(state.getBotId(), state);
+			}
+
+
+			for (Trace trace : col) {
+				// int res = session.insert("rose.mary.trace.database.mapper.m01.TraceMapper.insert", trace);
+				int res = session.update("rose.mary.trace.database.mapper.m01.TraceMapper.upsert", trace);
+
+				// if(loadError) {
+				// session.insert("rose.mary.trace.database.mapper.m01.TraceMapper.insertError",
+				// trace);
+				// }
+				//
+				// if(loadContents) {
+				// session.insert("rose.mary.trace.database.mapper.m01.TraceMapper.insertContents",
+				// trace);
+				// }
+			}
+
+
+			synchronized (monitor) {
+				session.flushStatements();
+				session.commit();
+			}
+
+			finCache.put(updateStates);
+
+		} catch (Exception e) {
+			session.rollback();
+			throw e;
+		} finally {
+			if (session != null)
+				session.close();
+		}
+	}
+
 
 	/**
 	 * <pre>
