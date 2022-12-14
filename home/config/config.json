@@ -1,4 +1,5 @@
 {
+	"type": "A",
 	"direct": true,
 	"loadNotFinishedState": true,
 	"loadNotFinishedStateDurationMin": -60,

@@ -18,6 +18,7 @@ import rose.mary.trace.manager.MonitorManager;
 import rose.mary.trace.manager.SystemErrorTestManager;
 import rose.mary.trace.manager.TesterManager;
 import rose.mary.trace.manager.TraceErrorHandlerManager;
+import rose.mary.trace.manager.TraceRouterManager;
 import rose.mary.trace.manager.UnmatchHandlerManager;
 import rose.mary.trace.manager.CacheManager;
 
@@ -61,6 +62,14 @@ public class TraceServer {
 	CacheManager cacheManager;
 
 	DirectLoaderManager directLoaderManager;
+
+	final static String TYPE_FIRST  = "A";
+	final static String TYPE_DIRECT = "B";
+	final static String TYPE_ROUTER = "C";
+	
+	String type = TYPE_DIRECT;
+	TraceRouterManager traceRouterManager;
+
 	/**
 	 * 
 	 * @param name
@@ -107,10 +116,58 @@ public class TraceServer {
 	public void setDirect(boolean direct){
 		this.direct = direct;
 	}
+
+	
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public TraceRouterManager getTraceRouterManager() {
+		return traceRouterManager;
+	}
+
+	public void setTraceRouterManager(TraceRouterManager traceRouterManager) {
+		this.traceRouterManager = traceRouterManager;
+	}
+
 	/**
 	 * 
 	 * @throws Exception
 	 */
+	public void ready() throws Exception {
+		if(TYPE_FIRST.equals(type)){
+			loaderManager.ready();
+			boterManager.ready();
+			botLoaderManager.ready();
+			finisherManager.ready();
+			botErrorHandlerManager.ready();
+			traceErrorHandlerManager.ready();
+			unmatchHandlerManager.ready();
+			// databasePolicyHandlerManager.ready();
+		}else if(TYPE_DIRECT.equals(type)){
+			finisherManager.ready();
+			unmatchHandlerManager.ready();
+			// databasePolicyHandlerManager.ready();
+		}else if(TYPE_ROUTER.equals(type)){
+			traceRouterManager.ready();
+			botLoaderManager.ready();
+			finisherManager.ready();
+			botErrorHandlerManager.ready();
+			traceErrorHandlerManager.ready();
+			unmatchHandlerManager.ready();
+		}else{
+			throw new Exception("UndefinedServerTypeException : input type[".concat(type).concat("], type value must be A, B, C"));
+		}
+ 
+		
+		state = STATE_INIT;
+	}
+	/*
 	public void ready() throws Exception {
 
 		loaderManager.ready();
@@ -123,7 +180,7 @@ public class TraceServer {
 		// databasePolicyHandlerManager.ready();
 		state = STATE_INIT;
 	}
-
+	*/
 	/**
 	 * 
 	 * @throws Exception
@@ -152,11 +209,8 @@ public class TraceServer {
 	}
 	*/
 	public void start() throws Exception {
-		if(direct){
-			startDirectLoader();
-			startFinisher();
-			startUnmatchHandler();
-		}else{
+		 
+		if(TYPE_FIRST.equals(type)){
 			startBotLoader();
 			startBoter();
 			startLoader();
@@ -173,12 +227,31 @@ public class TraceServer {
 					&& configurationManager.getConfig().getSystemErrorTestManagerConfig().isStartOnLoad()) {
 				systemErrorTestManager.start();
 			}
+		}else if(TYPE_DIRECT.equals(type)){
+			startDirectLoader();
+			startFinisher();
+			startUnmatchHandler();
+		}else if(TYPE_ROUTER.equals(type)){			
+			startBotLoader();
+			startTraceRouter();
+			startChannel();
+			startFinisher();
+			if (startTraceErrorHandler)
+				startTraceErrorHandler();
+			if (startBotErrorHandler)
+				startBotErrorHandler();
+			startUnmatchHandler();
+
+		}else{
+			throw new Exception("UndefinedServerTypeException : input type[".concat(type).concat("], type value must be A, B, C"));
 		}
-		
 
 		state = STATE_START;
 	}
 
+	private void startTraceRouter() throws Exception {
+		traceRouterManager.start();
+	}
 
 	private void startDirectLoader() throws Exception {
 		directLoaderManager.startLoaders();
@@ -194,11 +267,8 @@ public class TraceServer {
 	 * @throws Exception
 	 */
 	public void stop() throws Exception {
-		if(direct){
-			stopDirectLoader();
-			stopFinisher();
-			stopUnmatchHandler();
-		}else{
+
+		if(TYPE_FIRST.equals(type)){
 			stopChannel();
 			Thread.sleep(stopDelay);
 			stopLoader();
@@ -221,8 +291,33 @@ public class TraceServer {
 				systemErrorTestManager.stop();
 			}
 
-		}
+		}else if(TYPE_DIRECT.equals(type)){
+			stopDirectLoader();
+			Thread.sleep(stopDelay);
+			stopFinisher();
+			Thread.sleep(stopDelay);
+			stopUnmatchHandler();
+		}else if(TYPE_ROUTER.equals(type)){			
+			stopChannel();
+			Thread.sleep(stopDelay);
+			stopTraceRouter();
+			Thread.sleep(stopDelay);
+			stopBotLoader();
+			Thread.sleep(stopDelay);
+			stopFinisher();
+	
+			if (startTraceErrorHandler)
+				stopTraceErrorHandler();
+			if (startBotErrorHandler)
+				stopBotErrorHandler();
+			stopUnmatchHandler();
+	
+			// stopDatabasePolicyHandler();
 
+		}else{
+			throw new Exception("UndefinedServerTypeException : input type[".concat(type).concat("], type value must be A, B, C"));
+		}
+ 
 		state = STATE_STOP;
 	}
 	/* 
@@ -255,6 +350,10 @@ public class TraceServer {
 
 	private void stopDirectLoader() {
 		directLoaderManager.stopLoaders();
+	}
+
+	private void stopTraceRouter() {
+		traceRouterManager.stop();
 	}
 
 	private void startBotErrorHandler() throws Exception {

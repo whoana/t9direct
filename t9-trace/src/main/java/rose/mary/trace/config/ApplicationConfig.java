@@ -37,6 +37,7 @@ import rose.mary.trace.database.service.InterfaceService;
 import rose.mary.trace.database.service.StateService;
 import rose.mary.trace.database.service.SystemService;
 import rose.mary.trace.database.service.TraceService;
+import rose.mary.trace.loader.RouteHandler;
 import rose.mary.trace.loader.StateHandler;
 import rose.mary.trace.manager.BotErrorHandlerManager;
 import rose.mary.trace.manager.BotLoaderManager;
@@ -55,6 +56,7 @@ import rose.mary.trace.manager.ServerManager;
 import rose.mary.trace.manager.SystemErrorTestManager;
 import rose.mary.trace.manager.TesterManager;
 import rose.mary.trace.manager.TraceErrorHandlerManager;
+import rose.mary.trace.manager.TraceRouterManager;
 import rose.mary.trace.manager.UnmatchHandlerManager;
 import rose.mary.trace.server.TraceServer;
 import rose.mary.trace.service.GenerateTraceMsgService;
@@ -233,6 +235,35 @@ public class ApplicationConfig {
 
 
 	@Bean
+	public RouteHandler getRouteHandler(
+		@Autowired CacheManager cacheManager
+	) {
+		RouteHandler handler = new RouteHandler(
+			cacheManager.getFinCache(),
+			cacheManager.getBotCaches(),
+				cacheManager.getRoutingCache()
+		);
+		return handler;
+	}
+
+	@Bean
+	public TraceRouterManager traceRouterManager(
+		@Autowired ConfigurationManager configurationManager,
+		@Autowired TraceService traceService, 
+		@Autowired CacheManager cacheManager,
+		@Autowired @Qualifier("tpm2") ThroughputMonitor tpm2,
+		@Autowired RouteHandler routeHandler
+	) throws Exception {
+		return new TraceRouterManager(
+			configurationManager.getLoaderManagerConfig(), 
+			traceService, 
+			cacheManager, 
+			tpm2,
+				routeHandler
+		);
+	}
+
+	@Bean
 	public ChannelManager channelManager(@Autowired ConfigurationManager configurationManager,
 			@Autowired CacheManager cacheManager, @Autowired @Qualifier("tpm1") ThroughputMonitor tpm1,
 			@Autowired ThreadPoolTaskExecutor taskExecutor)
@@ -343,7 +374,9 @@ public class ApplicationConfig {
 			@Autowired CacheManager cacheManager,
 			@Autowired ApplicationContext applicationContext,
 			@Autowired DirectLoaderManager directLoaderManager,
-			@Autowired BotService botService) throws Exception {
+			@Autowired BotService botService,
+			@Autowired TraceRouterManager traceRouterManager
+		) throws Exception {
 		String name = configurationManager.getServerManagerConfig().getName();
 		TraceServer server = new TraceServer(
 				name,
@@ -361,9 +394,15 @@ public class ApplicationConfig {
 				systemErrorTestManager,
 				cacheManager);
 		server.ready();
+		
 		boolean direct = configurationManager.getConfig().isDirect();
 		server.setDirectLoaderManager(directLoaderManager);
 		server.setDirect(direct);
+
+		server.setTraceRouterManager(traceRouterManager);
+		String type = configurationManager.getConfig().getType();
+		server.setType(type);
+
 		ServerManager manager = new ServerManager(server, datasource01, applicationContext, cacheManager);
 		
 

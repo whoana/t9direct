@@ -14,7 +14,10 @@ package rose.mary.trace.core.config;
  */
 public class Config {
 
+	String type = "B";
+
 	boolean direct = false;
+
 	
 	// add at 20221213 
 	// option for load not finied states to finCache
@@ -265,6 +268,14 @@ public class Config {
 
 	public void setLoadNotFinishedStateDurationMin(int loadNotFinishedStateDurationMin) {
 		this.loadNotFinishedStateDurationMin = loadNotFinishedStateDurationMin;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	
