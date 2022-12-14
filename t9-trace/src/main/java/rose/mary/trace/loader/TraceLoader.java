@@ -115,35 +115,19 @@ public class TraceLoader implements Runnable {
 	public void commit() throws Exception {
 		try {
 			Collection<Trace> collection = loadItems.values();
-
-			if (Variables.debugLineByLine)
-				logger.debug(name + "-TLLBLD0101");
-
 			traceLoadService.load(collection, loadError, loadContents);
-
-			if (Variables.debugLineByLine)
-				logger.debug(name + "-TLLBLD0102");
-
+ 
 			if (tpm != null)
 				tpm.count(loadItems.size());
-
-			if (Variables.debugLineByLine)
-				logger.debug(name + "-TLLBLD0103");
 
 			if (T9.runMode == RunMode.Server) {
 				mergeCache.put(loadItems);
 			} else if (T9.runMode == RunMode.Distributor) {
 				distribute(loadItems);
 			}
-
-			if (Variables.debugLineByLine)
-				logger.debug(name + "-TLLBLD0104");
-
+ 
 			distributeCache.removeAll(loadItems.keySet());
-
-			if (Variables.debugLineByLine)
-				logger.debug(name + "-TLLBLD0105");
-
+ 
 		} catch (Exception e) {
 			// ----------------------------------------------------
 			// 20220905
@@ -352,11 +336,8 @@ public class TraceLoader implements Runnable {
 
 			try {
 				if (loadItems.size() > 0 && (System.currentTimeMillis() - commitLapse >= maxCommitWait)) {
-					if (Variables.debugLineByLine)
-						logger.debug(name + "-TLLBLD0100");
+
 					commit();
-					if (Variables.debugLineByLine)
-						logger.debug(name + "-TLLBLD0199");
 				}
 
 				Collection<Trace> values = distributeCache.values();
@@ -388,11 +369,7 @@ public class TraceLoader implements Runnable {
 					if (loadItems.size() > 0 && (loadItems.size() % commitCount == 0)) {
 
 						try {
-							if (Variables.debugLineByLine)
-								logger.debug(name + "-TLLBLD0100");
 							commit();
-							if (Variables.debugLineByLine)
-								logger.debug(name + "-TLLBLD0199");
 							break;
 						} catch (Exception e) {
 

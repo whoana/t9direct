@@ -3,6 +3,8 @@
  */
 package rose.mary.trace.database.mapper.m01;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -28,5 +30,7 @@ public interface BotMapper {
 
 	public State getState(@Param("integrationId") String integrationId, @Param("trackingDate") String trackingDate,
 			@Param("orgHostId") String orgHostId) throws Exception;
+
+	public List<State> getNotFinishedStates(@Param("fromDate") String fromDate, @Param("toDate") String toDate);
 
 }

@@ -5,6 +5,7 @@ package rose.mary.trace.database.service;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.session.ExecutorType;
@@ -94,8 +95,90 @@ public class BotService {
 	 * @param states
 	 * @throws Exception
 	 */
-	public void mergeBots(Collection<State> states, CacheProxy<String, State> finCache) throws Exception {
+	public void mergeBotsSynchronized(Collection<State> states, CacheProxy<String, State> finCache) throws Exception {
+		boolean autoCommit = false;
+		SqlSession session = null;
+		try {
+			synchronized (monitor) {
+				session = sqlSessionFactory.openSession(ExecutorType.BATCH, autoCommit);
+				// 20220825
+				// 처리 속도 향상을 위해 한번만 실행하는 것으로 함 정확한 로킹을 위해서는 for 안으로 이동 필요함.
+				String date = Util.getFormatedDate(Util.DEFAULT_DATE_FORMAT_MI);
+				// Map<String, State> updateStates = new HashMap<String, State>();
+				for (State state : states) {
+					// String date = Util.getFormatedDate(Util.DEFAULT_DATE_FORMAT_MI);
+					Bot bot = new Bot();
+					InterfaceInfo interfaceInfo = cacheManager.getInterfaceCache().get(state.getIntegrationId());
+					if (interfaceInfo == null) {
+						// 매치되는 것이 없으면 TOP0503에는 저장하지 않는다.
+						// 대신 UnmatchCache 에 integrationId 를 키값으로 Unmatch 오브젝트를 등록해 둔다.
 
+						// 저장 하려면 아래 로직으로 임시인터페이스 정보를 만들어 등록하도록 처리할 수 있다.(보류)
+						// interfaceInfo = new InterfaceInfo();
+						// interfaceInfo.setInterfaceId(state.getIntegrationId());
+						// interfaceInfo.setIntegrationId(state.getIntegrationId());
+						// interfaceInfo.setInterfaceNm(NOT_MATCH_NM);
+
+						state.setMatch(State.MATCH_NO);
+						state.setRegDate(date);
+						state.setModDate(date);
+
+						Unmatch unmatch = cacheManager.getUnmatchCache().get(state.getIntegrationId());
+						if (unmatch == null) {
+							unmatch = new Unmatch();
+							unmatch.setIntegrationId(state.getIntegrationId());
+							unmatch.setMatch(State.MATCH_NO);
+							unmatch.setRegDate(date);
+						} else {
+							unmatch.setModDate(date);
+						}
+						// cacheManager.getUnmatchCache().put(state.getIntegrationId(), unmatch);
+
+					} else {
+						state.setMatch(State.MATCH_YES);
+						bot.setState(state);
+						bot.setInterfaceInfo(interfaceInfo);
+						bot.setRegDate(date);
+						bot.setModDate(date);
+						// logger.debug("add batchItem:" + Util.toJSONString(bot));
+						int res = session.update("rose.mary.trace.database.mapper.m01.BotMapper.restore", bot);
+					}
+					state.setLoaded(true);
+					// updateStates.put(state.getBotId(), state);
+
+					// logger.info(
+					// Util.join(state.getBotId(), "thread:", Thread.currentThread().getName(),
+					// ",state:",
+					// Util.toJSONString(state)));
+				}
+
+				session.flushStatements();
+				session.commit();
+
+			}
+
+			// finCache.put(updateStates);
+
+		} catch (Exception e) {
+			session.rollback();
+			throw e;
+		} finally {
+			if (session != null)
+				session.close();
+		}
+	}
+
+	/**
+	 * <pre>
+	 * 등록되지 않은 인터페이스는  써머리 테이블[TOP0503]에 집계하지 않는다.
+	 * 대신 미매핑 테이블[TOP0504] 미매핑 정보를 등록 또는 없데이트 한다.
+	 * 향후 미매핑 로그도 써머리하려면 옵션 처리 할 수 있도록 수정해주자.
+	 * </pre>
+	 * 
+	 * @param states
+	 * @throws Exception
+	 */
+	public void mergeBots(Collection<State> states, CacheProxy<String, State> finCache) throws Exception {
 		boolean autoCommit = false;
 		SqlSession session = null;
 		try {
@@ -144,12 +227,15 @@ public class BotService {
 				}
 				state.setLoaded(true);
 				updateStates.put(state.getBotId(), state);
+
+				// logger.info(
+				// Util.join(state.getBotId(), "thread:", Thread.currentThread().getName(),
+				// ",state:",
+				// Util.toJSONString(state)));
 			}
 
-			synchronized (monitor) {
-				session.flushStatements();
-				session.commit();
-			}
+			session.flushStatements();
+			session.commit();
 
 			finCache.put(updateStates);
 
@@ -162,7 +248,8 @@ public class BotService {
 		}
 	}
 
-	public void mergeBots(Collection<Trace> col, boolean loadError, boolean loadContents, Collection<State> states, CacheProxy<String, State> finCache) throws Exception {
+	public void mergeBots(Collection<Trace> col, boolean loadError, boolean loadContents, Collection<State> states,
+			CacheProxy<String, State> finCache) throws Exception {
 
 		boolean autoCommit = false;
 		SqlSession session = null;
@@ -214,9 +301,10 @@ public class BotService {
 				updateStates.put(state.getBotId(), state);
 			}
 
-
 			for (Trace trace : col) {
-				// int res = session.insert("rose.mary.trace.database.mapper.m01.TraceMapper.insert", trace);
+				// int res =
+				// session.insert("rose.mary.trace.database.mapper.m01.TraceMapper.insert",
+				// trace);
 				int res = session.update("rose.mary.trace.database.mapper.m01.TraceMapper.upsert", trace);
 
 				// if(loadError) {
@@ -230,11 +318,10 @@ public class BotService {
 				// }
 			}
 
-
-			synchronized (monitor) {
-				session.flushStatements();
-				session.commit();
-			}
+			// synchronized (monitor) {
+			session.flushStatements();
+			session.commit();
+			// }
 
 			finCache.put(updateStates);
 
@@ -246,7 +333,6 @@ public class BotService {
 				session.close();
 		}
 	}
-
 
 	/**
 	 * <pre>
@@ -302,6 +388,26 @@ public class BotService {
 			state.setCreateDate(System.currentTimeMillis());
 		}
 		return state;
+	}
+
+	public Map<String, State> getNotFinishedStates(String fromDate, String toDate) throws Exception {
+		List<State> states = botMapper.getNotFinishedStates(fromDate, toDate);
+		System.out.println("states list:" + states.size());
+		Map<String, State> map = new HashMap<String, State>();
+		if (!Util.isEmpty(states)) {
+			for (State state : states) {
+				String botId = Util.join(state.getIntegrationId(), "@", state.getTrackingDate(), "@",
+						state.getOrgHostId());
+				state.setBotId(botId);
+				state.setFinish(false);
+				state.setCreateDate(System.currentTimeMillis());
+				map.put(botId, state);
+			}
+			// cacheManager.getFinCache().put(map);
+		}
+
+		return map;
+
 	}
 
 }

@@ -15,6 +15,14 @@ package rose.mary.trace.core.config;
 public class Config {
 
 	boolean direct = false;
+	
+	// add at 20221213 
+	// option for load not finied states to finCache
+	boolean loadNotFinishedState = false;
+
+	// add at 20221213 
+	// time for load not finied states to finCache
+	int loadNotFinishedStateDurationMin = 60;
 
 	ChannelManagerConfig channelManagerConfig;
 
@@ -242,7 +250,22 @@ public class Config {
 	public void setDirect(boolean direct) {
 		this.direct = direct;
 	}
+ 
+	public boolean isLoadNotFinishedState() {
+		return loadNotFinishedState;
+	}
+
+	public void setLoadNotFinishedState(boolean loadNotFinishedState) {
+		this.loadNotFinishedState = loadNotFinishedState;
+	}
+
+	public int getLoadNotFinishedStateDurationMin() {
+		return loadNotFinishedStateDurationMin;
+	}
+
+	public void setLoadNotFinishedStateDurationMin(int loadNotFinishedStateDurationMin) {
+		this.loadNotFinishedStateDurationMin = loadNotFinishedStateDurationMin;
+	}
 
 	
-
 }

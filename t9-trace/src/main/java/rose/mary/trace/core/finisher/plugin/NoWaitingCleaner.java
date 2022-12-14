@@ -40,18 +40,21 @@ public class NoWaitingCleaner implements Cleaner {
 	}
 
 	@Override
-	public void clean(long currentTime, State state) throws Exception {
+	public int clean(long currentTime, State state) throws Exception {
 		long elapsed = currentTime - state.getCreateDate();
-
+		int res = 0;
 		if (elapsed >= waitForCleaning) {
 			finCache.remove(state.getBotId());
 			routingCache.remove(state.getBotId());
+			res = 1;
 		} else {
 			if (state.isFinish() && state.isLoaded()) { // 완료건 중 DB 로딩된 건은 바로 삭제
 				finCache.remove(state.getBotId());
 				routingCache.remove(state.getBotId());
+				res = 1;
 			}
 		}
+		return res;
 
 	}
 

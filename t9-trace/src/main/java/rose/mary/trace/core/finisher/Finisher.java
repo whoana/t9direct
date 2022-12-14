@@ -98,8 +98,13 @@ public class Finisher implements Runnable {
 		// stopGracefully();
 		// }
 		isShutdown = true;
-		if (thread != null)
+		if (thread != null) {
 			thread.interrupt();
+			try {
+				thread.join();
+			} catch (InterruptedException e) {
+			}
+		}
 	}
 
 	@Override
@@ -158,15 +163,15 @@ public class Finisher implements Runnable {
 					try {
 
 						logger.info("ItsTimeForCleaning.");
-
+						int deleteCount = 0;
 						long currentTime = System.currentTimeMillis();
 						for (State state : values) {
-							cleaner.clean(currentTime, state);
+							deleteCount = deleteCount + cleaner.clean(currentTime, state);
 						}
 
 						beforeCleaningEndTime = System.currentTimeMillis();
 
-						logger.info("success cleaning...");
+						logger.info(Util.join("success cleaning(deleteCount:", deleteCount, ")"));
 
 					} catch (Exception e) {
 						throw e;
@@ -227,18 +232,14 @@ public class Finisher implements Runnable {
 				boolean doCleaning = System.currentTimeMillis() - beforeCleaningEndTime >= delayForDoCleaning;
 				if (doCleaning) {
 					try {
-
+						int deleteCount = 0;
 						logger.info("ItsTimeForCleaning.");
-
 						long currentTime = System.currentTimeMillis();
 						for (State state : values) {
-							cleaner.clean(currentTime, state);
+							deleteCount = deleteCount + cleaner.clean(currentTime, state);
 						}
-
 						beforeCleaningEndTime = System.currentTimeMillis();
-
-						logger.info("success cleaning...");
-
+						logger.info(Util.join("success cleaning(deleteCount:", deleteCount, ")"));
 					} catch (Exception e) {
 						throw e;
 					} finally {

@@ -53,6 +53,7 @@ public class BotErrorHandlerManager {
 		try {
 
 			CacheProxy<String, State> errorCache = cacheManager.getErrorCache02();
+			CacheProxy<String, State> finCache = cacheManager.getFinCache();
 			logger.info("BotErrorHandler starting");
 			botErrorHandler = new BotErrorHandler(config.getName(), errorCache, messageResource, botService,
 					config.getDelayForNoMessage(), config.getMaxRetry(), config.getExceptionDelay());

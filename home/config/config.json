@@ -1,5 +1,7 @@
 {
 	"direct": true,
+	"loadNotFinishedState": true,
+	"loadNotFinishedStateDurationMin": -60,
 	"channelManagerConfig": {
 		"oldStateCheckHandlerConfig": {
 			"usePreviousProcessInfo": false,

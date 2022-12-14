@@ -1,5 +1,6 @@
 package rose.mary.trace.loader;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -10,6 +11,7 @@ import rose.mary.trace.core.cache.CacheProxy;
 import rose.mary.trace.core.data.common.State;
 import rose.mary.trace.core.data.common.Trace;
 import rose.mary.trace.core.helper.checker.StateCheckerMap;
+// import rose.mary.trace.database.service.BotService;
 
 public class StateHandler {
 
@@ -20,33 +22,74 @@ public class StateHandler {
     public StateHandler(CacheProxy<String, State> finCache) {
         this.finCache = finCache;
     }
+    // public StateHandler(CacheProxy<String, State> finCache, BotService botService) {
+    //     this.finCache = finCache;
+    //     this.botService = botService;
+    // }
 
-    Object monitor = new Object();
+    // Object monitor = new Object();
 
     StateCommitter committer;
+
+    // public void handleState(Trace trace, List<State> stateList) throws Exception {
+
+    //     String botId = Util.join(trace.getIntegrationId(), "@", trace.getDate(), "@", trace.getOriginHostId());
+    //     State state = finCache.get(botId);
+    //     synchronized (monitor) {
+            
+    //         boolean first = false;
+    //         if (state == null) {
+    //             long currentDate = System.currentTimeMillis();
+    //             state = new State();
+    //             state.setCreateDate(currentDate);
+    //             state.setBotId(botId);
+    //             first = true;
+    //             finCache.put(botId, state);
+    //         }
+
+    //         StateCheckerMap.map.get(trace.getStateCheckHandlerId()).checkAndSet(first, trace, state);
+    //         if (!state.skip()) {
+    //             state.setLoaded(false);
+    //             stateList.add(state);
+    //         }
+    //         //logger.info(Util.join(botId, "thread:", Thread.currentThread().getName(), ",state:", Util.toJSONString(state)));
+    //     }
+        
+    // }
 
     public void handleState(Trace trace, List<State> stateList) throws Exception {
 
         String botId = Util.join(trace.getIntegrationId(), "@", trace.getDate(), "@", trace.getOriginHostId());
-        synchronized (monitor) {
-            State state = finCache.get(botId);
-            boolean first = false;
-            if (state == null) {
-                long currentDate = System.currentTimeMillis();
-                state = new State();
-                state.setCreateDate(currentDate);
-                state.setBotId(botId);
-                first = true;
-            }
+        State state = finCache.get(botId);
+        
+        boolean first = false;
+        if (state == null) {
+            long currentDate = System.currentTimeMillis();
+            state = new State();
+            state.setCreateDate(currentDate);
+            state.setBotId(botId);
+            first = true;
+            finCache.put(botId, state);
+        }
+        
+        synchronized (state) {
             StateCheckerMap.map.get(trace.getStateCheckHandlerId()).checkAndSet(first, trace, state);
-            //logger.info(Util.join(botId, ",status:", state.getStatus(), ", type:", trace.getType()));
             if (!state.skip()) {
                 state.setLoaded(false);
-                finCache.put(botId, state);
                 stateList.add(state);
             }
+            //logger.info(Util.join(botId, "thread:", Thread.currentThread().getName(), ",state:", Util.toJSONString(state)));
         }
         
     }
+
+
+    // BotService botService;
+
+    // public void commitStates(Collection<Trace> traces, boolean loadError, boolean loadContents, Collection<State> states, CacheProxy<String, State> finCache) throws Exception {
+    //     synchronized (monitor) {
+    //         botService.mergeBots(traces , loadError, loadContents, states, finCache);
+    //     }         
+    // }
 
 }

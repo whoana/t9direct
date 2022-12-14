@@ -3,8 +3,13 @@
  */
 package rose.mary.trace.config;
 
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
@@ -17,8 +22,10 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
+import pep.per.mint.common.util.Util;
 import rose.mary.trace.core.config.OldStateCheckHandlerConfig;
 import rose.mary.trace.core.data.common.RuntimeInfo;
+import rose.mary.trace.core.data.common.State;
 import rose.mary.trace.core.monitor.SystemResourceMonitor;
 import rose.mary.trace.core.monitor.ThroughputMonitor;
 
@@ -52,6 +59,7 @@ import rose.mary.trace.manager.UnmatchHandlerManager;
 import rose.mary.trace.server.TraceServer;
 import rose.mary.trace.service.GenerateTraceMsgService;
 import rose.mary.trace.system.SystemErrorDetector;
+import rose.mary.trace.system.SystemUtil;
 
 import javax.sql.DataSource;
 
@@ -66,6 +74,8 @@ import javax.sql.DataSource;
 @Configuration
 @EnableAsync
 public class ApplicationConfig {
+
+	Logger logger = LoggerFactory.getLogger(ApplicationConfig.class);
 
 	@Autowired
 	ApplicationContext applicationContext;
@@ -153,10 +163,14 @@ public class ApplicationConfig {
 	}
 
 	@Bean(initMethod = "prepare")
-	public CacheManager cacheManager(@Autowired ConfigurationManager configurationManager) throws Exception {
+	public CacheManager cacheManager(
+		@Autowired ConfigurationManager configurationManager
+	) throws Exception {
 		CacheManager manager = new CacheManager(configurationManager.getCacheManagerConfig());
 		return manager;
 	}
+
+	 
 
 	@Bean(initMethod = "prepare")
 	public InterfaceCacheManager interfaceCacheManager(@Autowired ConfigurationManager configurationManager,
@@ -328,7 +342,8 @@ public class ApplicationConfig {
 			@Autowired SystemErrorTestManager systemErrorTestManager,
 			@Autowired CacheManager cacheManager,
 			@Autowired ApplicationContext applicationContext,
-			@Autowired DirectLoaderManager directLoaderManager) throws Exception {
+			@Autowired DirectLoaderManager directLoaderManager,
+			@Autowired BotService botService) throws Exception {
 		String name = configurationManager.getServerManagerConfig().getName();
 		TraceServer server = new TraceServer(
 				name,
@@ -351,6 +366,18 @@ public class ApplicationConfig {
 		server.setDirect(direct);
 		ServerManager manager = new ServerManager(server, datasource01, applicationContext, cacheManager);
 		
+
+		// 	미완료 트레킹 서머리 캐시 로딩 
+		if(configurationManager.getConfig().isLoadNotFinishedState()){ 
+			logger.info("get not finised state list ");
+			int dur = configurationManager.getConfig().getLoadNotFinishedStateDurationMin();
+			String toDate = Util.getFormatedDate(Util.DEFAULT_DATE_FORMAT_MI);
+			String fromDate = SystemUtil.getFormatedDate(Util.DEFAULT_DATE_FORMAT_MI, toDate, Calendar.MINUTE, dur);			  
+			Map<String, State> states = botService.getNotFinishedStates(fromDate, toDate);		
+			cacheManager.getFinCache().put(states);
+		
+		}
+	
 		return manager;
 	}
 

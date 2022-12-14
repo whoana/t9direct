@@ -35,7 +35,7 @@ public class OldStateCheckHandler implements StateChecker {
 	}
 
 	@Override
-	public synchronized void checkAndSet(boolean first, Trace trace, State state) {
+	public void checkAndSet(boolean first, Trace trace, State state) {
 
 		String trackingDate = trace.getDate();
 		String orgHostId = trace.getOriginHostId();

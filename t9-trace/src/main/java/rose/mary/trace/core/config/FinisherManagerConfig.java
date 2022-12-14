@@ -22,6 +22,7 @@ public class FinisherManagerConfig {
 	int delayForDoCleaning = 1000;
 	boolean useWaitForCleaning = true;
 	boolean resetWhenStart = true;
+
 	String name = FinisherManagerConfig.class.getName();
 
 	/**
@@ -127,4 +128,7 @@ public class FinisherManagerConfig {
 		this.waitForFinishedCleaningSec = waitForFinishedCleaningSec;
 	}
 
+	
+
+	
 }

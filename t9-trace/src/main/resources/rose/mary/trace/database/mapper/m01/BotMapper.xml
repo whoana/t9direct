@@ -323,7 +323,18 @@
 		  and a.tracking_date  = #{trackingDate}
 		  and a.org_host_id    = #{orgHostId}
 	</select>
-			 
+
+	<select id="getNotFinishedStates" resultMap="stateMap">
+		<![CDATA[
+			select 
+				*
+			from top0503 a
+			where a.REG_DATE >= #{fromDate}
+			  and a.REG_DATE <= #{toDate}	
+			  and a.status = '01' 
+		]]>
+	</select>
+
 	<resultMap id="stateMap" type="rose.mary.trace.core.data.common.State">
 		<id property="integrationId" 			column="integration_id"/>
 		<id property="trackingDate"  			column="tracking_date"/>

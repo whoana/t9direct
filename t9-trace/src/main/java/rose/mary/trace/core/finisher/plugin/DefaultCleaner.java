@@ -33,6 +33,8 @@ public class DefaultCleaner implements Cleaner {
 
 	int waitForFinishedCleaning = 60 * 10 * 1000;// 10분
 
+	
+
 	public DefaultCleaner(
 			int waitForCleaning,
 			int waitForFinishedCleaning,
@@ -44,10 +46,11 @@ public class DefaultCleaner implements Cleaner {
 		this.backupCache = backupCache;
 		this.finCache = finCache;
 		this.routingCache = routingCache;
+		
 	}
 
 	@Override
-	public void clean(long currentTime, State state) throws Exception {
+	public int clean(long currentTime, State state) throws Exception {
 		// ----------------------------------------------------------
 		// 완료건 중에 삭제시간이 도래된 것만 삭제
 		// 완료되지 않은 건들 중 청소시간을 넘긴 것들 삭제 처리
@@ -60,6 +63,9 @@ public class DefaultCleaner implements Cleaner {
 			logger.debug("delete botId[" + botId + "]check1:" + check1 + ", check2:" + check2);
 			finCache.remove(state.getBotId());
 			routingCache.remove(state.getBotId());
+			return 1;
+		} else {
+			return 0;
 		}
 	}
 

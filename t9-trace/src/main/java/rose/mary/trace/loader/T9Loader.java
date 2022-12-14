@@ -25,7 +25,6 @@ import rose.mary.trace.database.service.TraceService;
 
 public class T9Loader implements Runnable {
 
-    
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
     final static int DEFAULT_COMMIT_COUNT = 1000;
@@ -81,7 +80,7 @@ public class T9Loader implements Runnable {
 
     private int maxCacheSize;
     private long delayForMaxCache;
-    
+
     private StateHandler stateHandler;
 
     public T9Loader(
@@ -177,7 +176,8 @@ public class T9Loader implements Runnable {
 
     private void initialize() throws Exception {
         if (MsgHandler.MODULE_MQ.equalsIgnoreCase(module)) {
-            mh = new MQMsgHandler(qmgrName, hostName, port, channelName, userId, password, ccsid, characterSet, autoCommit, bindMode);
+            mh = new MQMsgHandler(qmgrName, hostName, port, channelName, userId, password, ccsid, characterSet,
+                    autoCommit, bindMode);
         } else if (MsgHandler.MODULE_ILINK.equalsIgnoreCase(module)) {
             mh = new ILinkMsgHandler(qmgrName, hostName, port, channelName);
         } else {
@@ -190,15 +190,15 @@ public class T9Loader implements Runnable {
     public void stop() throws Exception {
         isShutdown = true;
         if (thread != null) {
-            try {
-                thread.interrupt();
-                thread.join();
-            } catch (InterruptedException e) {
-                logger.error("", e);
-            }
+            thread.interrupt();
+            // MQ 채널 FFDC 발생으로 주석처리 20221213
+            // try {
+            // thread.join();
+            // } catch (InterruptedException e) {
+            // logger.error("", e);
+            // }
         }
     }
- 
 
     @Override
     public void run() {
@@ -250,37 +250,31 @@ public class T9Loader implements Runnable {
                 {
                     // 1 get message
                     Object msg = trace();
-
-                    // 2 parse message to Trace
-                    // 3 add Trace to list
-                    Trace trace = null;
                     if (msg != null) {
+                        // 2 parse message to Trace
+                        // 3 add Trace to list
+                        Trace trace = null;
                         trace = parser.parse(msg);
+                        if (trace == null) {
+                            try {
+                                Thread.sleep(delayForNoMessage);
+                                continue;
+                            } catch (InterruptedException e1) {
+                                isShutdown = true;
+                                break;
+                            }
+                        }
                         checkRequiredField(trace);
                         trace.setRegDate(Util.getFormatedDate("yyyyMMddHHmmssSSS"));
                         trace.setStateCheckHandlerId(stateCheckerId);
                         traceList.add(trace);
-                    }
-
-                    if (trace == null) {
-                        try {
-                            Thread.sleep(delayForNoMessage);
-                            continue;
-                        } catch (InterruptedException e1) {
-                            isShutdown = true;
-                            // return;
-                            break;
-                        }
-                    }
-
-
-                    {
                         stateHandler.handleState(trace, stateList);
-                    }                    
+                    }
                 }
             } catch (RequiredFieldException re) {
 
-                logger.info("ERROR:SKIP:PARSING:001:Trace msg has no the required field(".concat(re.getFieldName()).concat(")"), re);
+                logger.info("ERROR:SKIP:PARSING:001:Trace msg has no the required field(".concat(re.getFieldName())
+                        .concat(")"), re);
 
                 try {
                     Thread.sleep(delayOnException);
@@ -376,10 +370,18 @@ public class T9Loader implements Runnable {
     // 5 commit mom
     private void commit() throws Exception {
         int count = traceList.size();
-        
-        // traceLoadService.load(traceList, loadError, loadContents);
-        // botService.mergeBots(stateList, finCache);
-        botService.mergeBots(traceList, loadError, loadContents, stateList, finCache);
+
+        // method a
+        traceLoadService.load(traceList, loadError, loadContents);
+        botService.mergeBotsSynchronized(stateList, finCache);
+
+        // method b
+        // botService.mergeBots(traceList, loadError, loadContents, stateList,
+        // finCache);
+
+        // method c
+        // stateHandler.commitStates(traceList, loadError, loadContents, stateList,
+        // finCache);
 
         traceList.clear();
         stateList.clear();
@@ -408,7 +410,7 @@ public class T9Loader implements Runnable {
      * 체크항목이 많아지면 속도가 느려짐
      */
     private void checkRequiredField(Trace trace) throws RequiredFieldException {
-         
+
         if (Util.isEmpty(trace.getIntegrationId()))
             throw new RequiredFieldException("integrationId");
         if (Util.isEmpty(trace.getOriginHostId()))

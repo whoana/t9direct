@@ -54,6 +54,8 @@ public class BotErrorHandler implements Runnable {
 
 	String name;
 
+	CacheProxy<String, State> finCache;
+
 	public BotErrorHandler(
 			String name,
 			CacheProxy<String, State> errorCache,
