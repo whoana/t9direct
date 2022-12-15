@@ -52,6 +52,7 @@ public class CacheManager {
 	CacheProxy<String, Integer> routingCache = null;
 
 	List<CacheProxy<String, StateEvent>> botCaches = null;
+	List<CacheProxy<String, State>> cloneCaches = null;
 
 	CacheProxy<String, State> finCache = null;
 
@@ -93,6 +94,7 @@ public class CacheManager {
 		backupCache = cmp.getBackupCache();
 
 		botCaches = cmp.getBotCaches();
+		cloneCaches = cmp.getCloneCaches();
 		finCache = cmp.getFinCache();
 
 		routingCache = cmp.getRoutingCache();
@@ -111,6 +113,10 @@ public class CacheManager {
 
 		for (CacheProxy botCache : botCaches) {
 			cacheMap.put(botCache.getName(), botCache);
+		}
+
+		for (CacheProxy cloneCache : cloneCaches) {
+			cacheMap.put(cloneCache.getName(), cloneCache);
 		}
 
 		cacheMap.put(finCache.getName(), finCache);
@@ -250,6 +256,10 @@ public class CacheManager {
 
 	public List<CacheProxy<String, StateEvent>> getBotCaches() {
 		return botCaches;
+	}
+
+	public List<CacheProxy<String, State>> getCloneCaches() {
+		return cloneCaches;
 	}
 
 	public CacheProxy<String, State> getFinCache() {

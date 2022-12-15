@@ -10,6 +10,7 @@ import rose.mary.trace.manager.BotErrorHandlerManager;
 import rose.mary.trace.manager.BotLoaderManager;
 import rose.mary.trace.manager.BoterManager;
 import rose.mary.trace.manager.ChannelManager;
+import rose.mary.trace.manager.CloneLoaderManager;
 import rose.mary.trace.manager.ConfigurationManager;
 import rose.mary.trace.manager.DirectLoaderManager;
 import rose.mary.trace.manager.FinisherManager;
@@ -63,10 +64,10 @@ public class TraceServer {
 
 	DirectLoaderManager directLoaderManager;
 
-	final static String TYPE_FIRST  = "A";
+	final static String TYPE_FIRST = "A";
 	final static String TYPE_DIRECT = "B";
 	final static String TYPE_ROUTER = "C";
-	
+
 	String type = TYPE_DIRECT;
 	TraceRouterManager traceRouterManager;
 
@@ -107,17 +108,16 @@ public class TraceServer {
 		this.cacheManager = cacheManager;
 
 	}
-	
+
 	boolean direct = true;
-	public void setDirectLoaderManager(DirectLoaderManager directLoaderManager){
+
+	public void setDirectLoaderManager(DirectLoaderManager directLoaderManager) {
 		this.directLoaderManager = directLoaderManager;
 	}
 
-	public void setDirect(boolean direct){
+	public void setDirect(boolean direct) {
 		this.direct = direct;
 	}
-
-	
 
 	public String getType() {
 		return type;
@@ -140,7 +140,7 @@ public class TraceServer {
 	 * @throws Exception
 	 */
 	public void ready() throws Exception {
-		if(TYPE_FIRST.equals(type)){
+		if (TYPE_FIRST.equals(type)) {
 			loaderManager.ready();
 			boterManager.ready();
 			botLoaderManager.ready();
@@ -149,68 +149,72 @@ public class TraceServer {
 			traceErrorHandlerManager.ready();
 			unmatchHandlerManager.ready();
 			// databasePolicyHandlerManager.ready();
-		}else if(TYPE_DIRECT.equals(type)){
+		} else if (TYPE_DIRECT.equals(type)) {
 			finisherManager.ready();
 			unmatchHandlerManager.ready();
 			// databasePolicyHandlerManager.ready();
-		}else if(TYPE_ROUTER.equals(type)){
+		} else if (TYPE_ROUTER.equals(type)) {
 			traceRouterManager.ready();
 			botLoaderManager.ready();
 			finisherManager.ready();
 			botErrorHandlerManager.ready();
 			traceErrorHandlerManager.ready();
 			unmatchHandlerManager.ready();
-		}else{
-			throw new Exception("UndefinedServerTypeException : input type[".concat(type).concat("], type value must be A, B, C"));
+		} else {
+			throw new Exception(
+					"UndefinedServerTypeException : input type[".concat(type).concat("], type value must be A, B, C"));
 		}
- 
-		
-		state = STATE_INIT;
-	}
-	/*
-	public void ready() throws Exception {
 
-		loaderManager.ready();
-		boterManager.ready();
-		botLoaderManager.ready();
-		finisherManager.ready();
-		botErrorHandlerManager.ready();
-		traceErrorHandlerManager.ready();
-		unmatchHandlerManager.ready();
-		// databasePolicyHandlerManager.ready();
 		state = STATE_INIT;
 	}
-	*/
+
+	/*
+	 * public void ready() throws Exception {
+	 * 
+	 * loaderManager.ready();
+	 * boterManager.ready();
+	 * botLoaderManager.ready();
+	 * finisherManager.ready();
+	 * botErrorHandlerManager.ready();
+	 * traceErrorHandlerManager.ready();
+	 * unmatchHandlerManager.ready();
+	 * // databasePolicyHandlerManager.ready();
+	 * state = STATE_INIT;
+	 * }
+	 */
 	/**
 	 * 
 	 * @throws Exception
 	 */
-	/* for backup
+	/*
+	 * for backup
+	 * public void start() throws Exception {
+	 * 
+	 * startBotLoader();
+	 * startBoter();
+	 * startLoader();
+	 * startChannel();
+	 * startFinisher();
+	 * if (startTraceErrorHandler)
+	 * startTraceErrorHandler();
+	 * if (startBotErrorHandler)
+	 * startBotErrorHandler();
+	 * startUnmatchHandler();
+	 * // startDatabasePolicyHandler();
+	 * 
+	 * if (configurationManager.getConfig().getSystemErrorTestManagerConfig() !=
+	 * null
+	 * && configurationManager.getConfig().getSystemErrorTestManagerConfig().
+	 * isStartOnLoad()) {
+	 * systemErrorTestManager.start();
+	 * }
+	 * 
+	 * state = STATE_START;
+	 * }
+	 */
 	public void start() throws Exception {
 
-		startBotLoader();
-		startBoter();
-		startLoader();
-		startChannel();
-		startFinisher();
-		if (startTraceErrorHandler)
-			startTraceErrorHandler();
-		if (startBotErrorHandler)
-			startBotErrorHandler();
-		startUnmatchHandler();
-		// startDatabasePolicyHandler();
-
-		if (configurationManager.getConfig().getSystemErrorTestManagerConfig() != null
-				&& configurationManager.getConfig().getSystemErrorTestManagerConfig().isStartOnLoad()) {
-			systemErrorTestManager.start();
-		}
-
-		state = STATE_START;
-	}
-	*/
-	public void start() throws Exception {
-		 
-		if(TYPE_FIRST.equals(type)){
+		if (TYPE_FIRST.equals(type)) {
 			startBotLoader();
 			startBoter();
 			startLoader();
@@ -222,16 +226,16 @@ public class TraceServer {
 				startBotErrorHandler();
 			startUnmatchHandler();
 			// startDatabasePolicyHandler();
-	
+
 			if (configurationManager.getConfig().getSystemErrorTestManagerConfig() != null
 					&& configurationManager.getConfig().getSystemErrorTestManagerConfig().isStartOnLoad()) {
 				systemErrorTestManager.start();
 			}
-		}else if(TYPE_DIRECT.equals(type)){
+		} else if (TYPE_DIRECT.equals(type)) {
 			startDirectLoader();
 			startFinisher();
 			startUnmatchHandler();
-		}else if(TYPE_ROUTER.equals(type)){			
+		} else if (TYPE_ROUTER.equals(type)) {
 			startBotLoader();
 			startTraceRouter();
 			startChannel();
@@ -242,8 +246,9 @@ public class TraceServer {
 				startBotErrorHandler();
 			startUnmatchHandler();
 
-		}else{
-			throw new Exception("UndefinedServerTypeException : input type[".concat(type).concat("], type value must be A, B, C"));
+		} else {
+			throw new Exception(
+					"UndefinedServerTypeException : input type[".concat(type).concat("], type value must be A, B, C"));
 		}
 
 		state = STATE_START;
@@ -268,7 +273,7 @@ public class TraceServer {
 	 */
 	public void stop() throws Exception {
 
-		if(TYPE_FIRST.equals(type)){
+		if (TYPE_FIRST.equals(type)) {
 			stopChannel();
 			Thread.sleep(stopDelay);
 			stopLoader();
@@ -278,26 +283,26 @@ public class TraceServer {
 			stopBotLoader();
 			Thread.sleep(stopDelay);
 			stopFinisher();
-	
+
 			if (startTraceErrorHandler)
 				stopTraceErrorHandler();
 			if (startBotErrorHandler)
 				stopBotErrorHandler();
 			stopUnmatchHandler();
-	
+
 			// stopDatabasePolicyHandler();
-	
+
 			if (configurationManager.getConfig().getSystemErrorTestManagerConfig().isStartOnLoad()) {
 				systemErrorTestManager.stop();
 			}
 
-		}else if(TYPE_DIRECT.equals(type)){
+		} else if (TYPE_DIRECT.equals(type)) {
 			stopDirectLoader();
 			Thread.sleep(stopDelay);
 			stopFinisher();
 			Thread.sleep(stopDelay);
 			stopUnmatchHandler();
-		}else if(TYPE_ROUTER.equals(type)){			
+		} else if (TYPE_ROUTER.equals(type)) {
 			stopChannel();
 			Thread.sleep(stopDelay);
 			stopTraceRouter();
@@ -305,48 +310,50 @@ public class TraceServer {
 			stopBotLoader();
 			Thread.sleep(stopDelay);
 			stopFinisher();
-	
+
 			if (startTraceErrorHandler)
 				stopTraceErrorHandler();
 			if (startBotErrorHandler)
 				stopBotErrorHandler();
 			stopUnmatchHandler();
-	
+
 			// stopDatabasePolicyHandler();
 
-		}else{
-			throw new Exception("UndefinedServerTypeException : input type[".concat(type).concat("], type value must be A, B, C"));
-		}
- 
-		state = STATE_STOP;
-	}
-	/* 
-	public void stop() throws Exception {
-		stopChannel();
-		Thread.sleep(stopDelay);
-		stopLoader();
-		Thread.sleep(stopDelay);
-		stopBoter();
-		Thread.sleep(stopDelay);
-		stopBotLoader();
-		Thread.sleep(stopDelay);
-		stopFinisher();
-
-		if (startTraceErrorHandler)
-			stopTraceErrorHandler();
-		if (startBotErrorHandler)
-			stopBotErrorHandler();
-		stopUnmatchHandler();
-
-		// stopDatabasePolicyHandler();
-
-		if (configurationManager.getConfig().getSystemErrorTestManagerConfig().isStartOnLoad()) {
-			systemErrorTestManager.stop();
+		} else {
+			throw new Exception(
+					"UndefinedServerTypeException : input type[".concat(type).concat("], type value must be A, B, C"));
 		}
 
 		state = STATE_STOP;
 	}
-	*/
+	/*
+	 * public void stop() throws Exception {
+	 * stopChannel();
+	 * Thread.sleep(stopDelay);
+	 * stopLoader();
+	 * Thread.sleep(stopDelay);
+	 * stopBoter();
+	 * Thread.sleep(stopDelay);
+	 * stopBotLoader();
+	 * Thread.sleep(stopDelay);
+	 * stopFinisher();
+	 * 
+	 * if (startTraceErrorHandler)
+	 * stopTraceErrorHandler();
+	 * if (startBotErrorHandler)
+	 * stopBotErrorHandler();
+	 * stopUnmatchHandler();
+	 * 
+	 * // stopDatabasePolicyHandler();
+	 * 
+	 * if (configurationManager.getConfig().getSystemErrorTestManagerConfig().
+	 * isStartOnLoad()) {
+	 * systemErrorTestManager.stop();
+	 * }
+	 * 
+	 * state = STATE_STOP;
+	 * }
+	 */
 
 	private void stopDirectLoader() {
 		directLoaderManager.stopLoaders();
@@ -525,6 +532,12 @@ public class TraceServer {
 
 	public void stopGenerateMsgTester() {
 		testerManager.stop();
+	}
+
+	CloneLoaderManager cloneLoaderManager;
+
+	public void setCloneLoaderManager(CloneLoaderManager cloneLoaderManager) {
+		this.cloneLoaderManager = cloneLoaderManager;
 	}
 
 }

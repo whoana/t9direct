@@ -70,9 +70,9 @@
 	    </encoder>
 	    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
 	        <fileNamePattern>${rose.mary.home}//logs//system_%d{dd-MM-yyyy}_%i.log</fileNamePattern>
-	        <maxFileSize>20MB</maxFileSize>
-	        <maxHistory>20</maxHistory>
-	        <totalSizeCap>100MB</totalSizeCap>
+	        <maxFileSize>1024MB</maxFileSize>
+	        <maxHistory>2</maxHistory>
+	        <totalSizeCap>2048MB</totalSizeCap>
 	    </rollingPolicy>
 	</appender>
 	

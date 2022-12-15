@@ -181,6 +181,29 @@
 				"maxEntries": 100000
 			}
 		],
+		"cloneCacheConfigs": [
+			{
+				"name": "cc01",
+				"memoryUnit": 3,
+				"heapSize": 10000,
+				"diskSize": 1,
+				"maxEntries": 100000
+			},
+			{
+				"name": "cc02",
+				"memoryUnit": 3,
+				"heapSize": 10000,
+				"diskSize": 1,
+				"maxEntries": 100000
+			},
+			{
+				"name": "cc03",
+				"memoryUnit": 3,
+				"heapSize": 10000,
+				"diskSize": 1,
+				"maxEntries": 100000
+			}
+		],
 		"finCacheConfig": {
 			"name": "fc01",
 			"memoryUnit": 3,

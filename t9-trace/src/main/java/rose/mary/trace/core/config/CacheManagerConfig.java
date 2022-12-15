@@ -42,6 +42,8 @@ public class CacheManagerConfig {
 
 	List<CacheConfig> botCacheConfigs;
 
+	List<CacheConfig> cloneCacheConfigs;
+
 	CacheConfig finCacheConfig;
 
 	CacheConfig stateCacheConfig;
@@ -224,6 +226,23 @@ public class CacheManagerConfig {
 	}
 
 	/**
+	 * 
+	 * @return
+	 */
+	public List<CacheConfig> getCloneCacheConfigs() {
+		return cloneCacheConfigs;
+	}
+
+	/**
+	 * 
+	 * @param botCacheConfigs
+	 */
+	public void setCloneCacheConfigs(List<CacheConfig> cloneCacheConfigs) {
+		this.cloneCacheConfigs = cloneCacheConfigs;
+	}
+
+
+	/**
 	 * @return the routingCacheConfig
 	 */
 	public CacheConfig getRoutingCacheConfig() {
@@ -276,5 +295,6 @@ public class CacheManagerConfig {
 	public void setDbCacheConfig(CacheConfig dbCacheConfig) {
 		this.dbCacheConfig = dbCacheConfig;
 	}
+ 
 
 }

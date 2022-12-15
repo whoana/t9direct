@@ -44,6 +44,7 @@ import rose.mary.trace.manager.BotLoaderManager;
 import rose.mary.trace.manager.BoterManager;
 import rose.mary.trace.manager.CacheManager;
 import rose.mary.trace.manager.ChannelManager;
+import rose.mary.trace.manager.CloneLoaderManager;
 import rose.mary.trace.manager.ConfigurationManager;
 import rose.mary.trace.manager.DirectLoaderManager;
 import rose.mary.trace.manager.PolicyHandlerManager;
@@ -241,7 +242,8 @@ public class ApplicationConfig {
 		RouteHandler handler = new RouteHandler(
 			cacheManager.getFinCache(),
 			cacheManager.getBotCaches(),
-				cacheManager.getRoutingCache()
+			cacheManager.getCloneCaches(),
+			cacheManager.getRoutingCache()
 		);
 		return handler;
 	}
@@ -292,6 +294,15 @@ public class ApplicationConfig {
 			@Autowired @Qualifier("tpm4") ThroughputMonitor tpm4, @Autowired StateService stateService)
 			throws Exception {
 		return new BotLoaderManager(configurationManager.getBotLoaderManagerConfig(), botService, cacheManager, tpm4,
+				stateService);
+	}
+
+	@Bean
+	public CloneLoaderManager cloneLoaderManager(@Autowired ConfigurationManager configurationManager,
+			@Autowired BotService botService, @Autowired CacheManager cacheManager,
+			@Autowired @Qualifier("tpm4") ThroughputMonitor tpm4, @Autowired StateService stateService)
+			throws Exception {
+		return new CloneLoaderManager(configurationManager.getBotLoaderManagerConfig(), botService, cacheManager, tpm4,
 				stateService);
 	}
 
@@ -363,6 +374,7 @@ public class ApplicationConfig {
 			@Autowired LoaderManager loaderManager,
 			@Autowired BoterManager boterManager,
 			@Autowired BotLoaderManager botLoaderManager,
+			@Autowired CloneLoaderManager cloneLoaderManager,
 			@Autowired FinisherManager finisherManager,
 			@Autowired TraceErrorHandlerManager traceErrorHandlerManager,
 			@Autowired BotErrorHandlerManager botErrorHandlerManager,
@@ -402,6 +414,9 @@ public class ApplicationConfig {
 		server.setTraceRouterManager(traceRouterManager);
 		String type = configurationManager.getConfig().getType();
 		server.setType(type);
+
+
+		server.setCloneLoaderManager(cloneLoaderManager);
 
 		ServerManager manager = new ServerManager(server, datasource01, applicationContext, cacheManager);
 		

@@ -125,6 +125,6 @@ dependencies {
 
 	//implementation fileTree (dir: 'lib', include:['ILinkAPI-6.1.0.jar','mi_link_wrapper.jar','mi_common.jar', 'javax.jms.jar','MQInterfaceSDK.1.6.4.jar'])
 	implementation fileTree (dir: 'lib', include:['ILinkAPI-6.2.jar','mi_link_wrapper.jar','mi_common.jar', 'javax.jms.jar','MQInterfaceSDK.1.6.4.jar'])
-	
+
 }
 

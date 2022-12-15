@@ -36,6 +36,8 @@ public abstract class CacheManagerProxy {
 
 	protected List<CacheProxy<String, StateEvent>> botCaches = new ArrayList<CacheProxy<String, StateEvent>>();
 
+	protected List<CacheProxy<String, State>> cloneCaches = new ArrayList<CacheProxy<String, State>>();
+
 	protected CacheProxy<String, State> finCache = null;
 
 	protected CacheProxy<String, Integer> routingCache = null;
@@ -140,4 +142,14 @@ public abstract class CacheManagerProxy {
 		return systemErrorCache;
 	}
 
+	public List<CacheProxy<String, State>> getCloneCaches() {
+		return cloneCaches;
+	}
+
+	public void setCloneCaches(List<CacheProxy<String, State>> cloneCaches) {
+		this.cloneCaches = cloneCaches;
+	}
+
+
+	
 }

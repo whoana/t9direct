@@ -57,6 +57,15 @@ public class JavaCacheManagerProxy extends CacheManagerProxy{
 			botCaches.add(cache);
 		}
 
+		// ----------------------------------------------------------------
+		// botCacheConfigs setting
+		// ----------------------------------------------------------------
+		List<CacheConfig> cloneCacheConfigs = config.getCloneCacheConfigs();
+        for (CacheConfig cloneCacheConfig : cloneCacheConfigs) {
+			JavaCacheProxy<String, State> cache = new JavaCacheProxy<String, State>(cloneCacheConfig.getName(), new ConcurrentHashMap<String, State>());
+			cloneCaches.add(cache);
+		}
+
         // ----------------------------------------------------------------
 		// finCacheConfig setting
 		// ----------------------------------------------------------------
