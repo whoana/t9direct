@@ -189,6 +189,7 @@ public class BotService {
 				String date = Util.getFormatedDate(Util.DEFAULT_DATE_FORMAT_MI);
 				Map<String, State> updateStates = new HashMap<String, State>();
 				for (State state : states) {
+				
 					// String date = Util.getFormatedDate(Util.DEFAULT_DATE_FORMAT_MI);
 					Bot bot = new Bot();
 					InterfaceInfo interfaceInfo = cacheManager.getInterfaceCache().get(state.getIntegrationId());
@@ -233,6 +234,9 @@ public class BotService {
 					// Util.join(state.getBotId(), "thread:", Thread.currentThread().getName(),
 					// ",state:",
 					// Util.toJSONString(state)));
+
+					logger.info(Util.join("dbt:", Util.toJSONString(state)));
+
 				}
 
 				session.flushStatements();

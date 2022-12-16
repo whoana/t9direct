@@ -132,6 +132,16 @@ public class ServerManager {
 		server.stopBotLoader();
 	}
 
+	public void startCloneLoader() throws Exception {
+		server.startCloneLoader();
+
+	}
+
+	public void stopCloneLoader() throws Exception {
+		server.stopCloneLoader();
+	}
+
+
 	public void startFinisher() throws Exception {
 		server.startFinisher();
 

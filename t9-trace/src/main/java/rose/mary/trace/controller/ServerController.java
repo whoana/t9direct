@@ -452,6 +452,36 @@ public class ServerController {
 
 	}
 
+	@RequestMapping(value = "/trace/managers/servers/cloneLoader/start", params = "method=GET", method = RequestMethod.POST, headers = "content-type=application/json")
+	public @ResponseBody ComMessage<ChannelOperation, ?> startCloneLoader(
+			HttpSession httpSession,
+			@RequestBody ComMessage<ChannelOperation, ?> comMessage,
+			Locale locale,
+			HttpServletRequest request) throws Throwable {
+
+		serverMgr.startCloneLoader();
+		comMessage.setEndTime(Util.getFormatedDate("yyyyMMddHHmmssSSS"));
+		comMessage.setErrorCd("0");
+
+		return comMessage;
+
+	}
+
+	@RequestMapping(value = "/trace/managers/servers/cloneLoader/stop", params = "method=GET", method = RequestMethod.POST, headers = "content-type=application/json")
+	public @ResponseBody ComMessage<ChannelOperation, ?> stopCloneLoader(
+			HttpSession httpSession,
+			@RequestBody ComMessage<ChannelOperation, ?> comMessage,
+			Locale locale,
+			HttpServletRequest request) throws Throwable {
+
+		serverMgr.stopCloneLoader();
+		comMessage.setEndTime(Util.getFormatedDate("yyyyMMddHHmmssSSS"));
+		comMessage.setErrorCd("0");
+
+		return comMessage;
+
+	}
+
 	@RequestMapping(value = "/trace/managers/servers/boter/start", params = "method=GET", method = RequestMethod.POST, headers = "content-type=application/json")
 	public @ResponseBody ComMessage<ChannelOperation, ?> startBoter(
 			HttpSession httpSession,

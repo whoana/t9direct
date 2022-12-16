@@ -1,5 +1,5 @@
 {
-	"type": "A",
+	"type": "C",
 	"direct": true,
 	"loadNotFinishedState": true,
 	"loadNotFinishedStateDurationMin": -60,
@@ -38,7 +38,7 @@
 				"userId": "mqm",
 				"password": "mqm",
 				"channelName": "SYSTEM.DEF.SVRCONN",
-				"queueName": "MTE1.EVQ",
+				"queueName": "TRACE.EQ",
 				"waitTime": 1000,
 				"module": "w",
 				"ccsid": 1208,
@@ -66,7 +66,7 @@
 				"userId": "mqm",
 				"password": "mqm",
 				"channelName": "SYSTEM.DEF.SVRCONN",
-				"queueName": "MTE1.EVQ",
+				"queueName": "TRACE.EQ",
 				"waitTime": 1000,
 				"module": "w",
 				"ccsid": 1208,
@@ -94,7 +94,7 @@
 				"userId": "mqm",
 				"password": "mqm",
 				"channelName": "SYSTEM.DEF.SVRCONN",
-				"queueName": "MTE1.EVQ",
+				"queueName": "TRACE.EQ",
 				"waitTime": 1000,
 				"module": "w",
 				"ccsid": 1208,
@@ -117,7 +117,7 @@
 		"translateMsgOnException": false
 	},
 	"cacheManagerConfig": {
-		"vendor": "java",
+		"vendor": "infinispan",
 		"diskPath": "caches",
 		"persistant": true,
 		"checkSizeDelay": 1000,

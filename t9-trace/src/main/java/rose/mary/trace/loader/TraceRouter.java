@@ -3,11 +3,11 @@
  */
 package rose.mary.trace.loader;
 
-
 import java.util.Collection;
 import java.util.HashMap;
-
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +61,7 @@ public class TraceRouter implements Runnable {
 
 	private boolean loadContents = true;
 
-	private Map<String, Trace> loadItems = new HashMap<String, Trace>();
+	private Map<String, Trace> loadItems = new LinkedHashMap<String, Trace>();
 
 	private long commitLapse = System.currentTimeMillis();
 
@@ -85,18 +85,17 @@ public class TraceRouter implements Runnable {
 	 * @param exceptionHandler
 	 */
 	public TraceRouter(
-		String name, 
-		int commitCount, 
-		long delayForNoMessage, 
-		boolean loadError, 
-		boolean loadContents,
-		CacheProxy<String, Trace> distributeCache,
-		CacheProxy<String, Trace> errorCache, 
-		TraceService traceLoadService, 
-		ThroughputMonitor tpm,
-		ExceptionHandler exceptionHandler,
-		RouteHandler routeHandler
-	) {
+			String name,
+			int commitCount,
+			long delayForNoMessage,
+			boolean loadError,
+			boolean loadContents,
+			CacheProxy<String, Trace> distributeCache,
+			CacheProxy<String, Trace> errorCache,
+			TraceService traceLoadService,
+			ThroughputMonitor tpm,
+			ExceptionHandler exceptionHandler,
+			RouteHandler routeHandler) {
 		this.name = name;
 		this.commitCount = commitCount;
 		this.distributeCache = distributeCache;
@@ -121,13 +120,12 @@ public class TraceRouter implements Runnable {
 		try {
 			Collection<Trace> collection = loadItems.values();
 			traceLoadService.load(collection, loadError, loadContents);
- 
+
 			if (tpm != null)
 				tpm.count(loadItems.size());
- 
- 
+
 			distributeCache.removeAll(loadItems.keySet());
- 
+
 		} catch (Exception e) {
 			// ----------------------------------------------------
 			// 20220905
@@ -156,7 +154,6 @@ public class TraceRouter implements Runnable {
 			commitLapse = System.currentTimeMillis();
 		}
 	}
-	  
 
 	public void rollback() {
 
@@ -183,7 +180,7 @@ public class TraceRouter implements Runnable {
 	}
 
 	public void run() {
-		runGracefully();		
+		runGracefully();
 	}
 
 	public void stopGracefully() {
@@ -197,9 +194,7 @@ public class TraceRouter implements Runnable {
 			}
 		}
 	}
- 
 
- 
 	public void runGracefully() {
 
 		logger.info(Util.join("start TraceRouter:[", name, "]"));
@@ -207,13 +202,16 @@ public class TraceRouter implements Runnable {
 		while (Thread.currentThread() == thread && !isShutdown) {
 
 			try {
-				if (loadItems.size() > 0 && (System.currentTimeMillis() - commitLapse >= maxCommitWait)) {
-
+				if (loadItems.size() > 0 &&
+						(System.currentTimeMillis() - commitLapse >= maxCommitWait)) {
 					commit();
 				}
 
-				Collection<Trace> values = distributeCache.values();
-				if (values == null || values.size() == 0) {
+				Set<String> keys = null;
+				if (distributeCache.isAccessable()) {
+					keys = distributeCache.keys();
+				}
+				if (keys == null || keys.size() == 0) {
 					try {
 						Thread.sleep(delayForNoMessage);
 						continue;
@@ -224,13 +222,15 @@ public class TraceRouter implements Runnable {
 				}
 
 				String regDate = Util.getFormatedDate("yyyyMMddHHmmssSSS");
-				for (Trace trace : values) {
-					String key = trace.getId();
+
+				for (String key : keys) {
+					Trace trace = distributeCache.get(key);
+
 					trace.setRegDate(regDate);
 
 					loadItems.put(key, trace);
 
-					routeHandler.handleState(trace);
+					routeHandler.handleStateByClone(trace);
 
 					if (loadItems.size() > 0 && (loadItems.size() % commitCount == 0)) {
 
@@ -289,6 +289,97 @@ public class TraceRouter implements Runnable {
 		logger.info(Util.join("stop TraceRouter:[", name, "]"));
 	}
 
+	/*
+	 * public void runGracefully() {
+	 * 
+	 * logger.info(Util.join("start TraceRouter:[", name, "]"));
+	 * 
+	 * while (Thread.currentThread() == thread && !isShutdown) {
+	 * 
+	 * try {
+	 * if (loadItems.size() > 0 && (System.currentTimeMillis() - commitLapse >=
+	 * maxCommitWait)) {
+	 * 
+	 * commit();
+	 * }
+	 * 
+	 * Collection<Trace> values = distributeCache.values();
+	 * if (values == null || values.size() == 0) {
+	 * try {
+	 * Thread.sleep(delayForNoMessage);
+	 * continue;
+	 * } catch (java.lang.InterruptedException ie) {
+	 * isShutdown = true;
+	 * break;
+	 * }
+	 * }
+	 * 
+	 * String regDate = Util.getFormatedDate("yyyyMMddHHmmssSSS");
+	 * for (Trace trace : values) {
+	 * String key = trace.getId();
+	 * trace.setRegDate(regDate);
+	 * 
+	 * loadItems.put(key, trace);
+	 * 
+	 * routeHandler.handleStateByClone(trace);
+	 * 
+	 * if (loadItems.size() > 0 && (loadItems.size() % commitCount == 0)) {
+	 * 
+	 * try {
+	 * commit();
+	 * break;
+	 * } catch (Exception e) {
+	 * 
+	 * if (exceptionHandler != null) {
+	 * exceptionHandler.handle("", e);
+	 * } else {
+	 * logger.error("", e);
+	 * }
+	 * 
+	 * try {
+	 * Thread.sleep(exceptionDelay);
+	 * } catch (InterruptedException e1) {
+	 * isShutdown = true;
+	 * return;
+	 * }
+	 * 
+	 * break;
+	 * }
+	 * }
+	 * }
+	 * 
+	 * } catch (Exception e) {
+	 * 
+	 * if (exceptionHandler != null) {
+	 * exceptionHandler.handle("", e);
+	 * } else {
+	 * logger.error("", e);
+	 * }
+	 * 
+	 * try {
+	 * Thread.sleep(exceptionDelay);
+	 * } catch (InterruptedException e1) {
+	 * isShutdown = true;
+	 * break;
+	 * }
+	 * 
+	 * }
+	 * }
+	 * 
+	 * try {
+	 * commit();
+	 * } catch (Exception e) {
+	 * if (exceptionHandler != null) {
+	 * exceptionHandler.handle("", e);
+	 * } else {
+	 * logger.error("", e);
+	 * }
+	 * }
+	 * 
+	 * isShutdown = true;
+	 * logger.info(Util.join("stop TraceRouter:[", name, "]"));
+	 * }
+	 */
 	public ExceptionHandler getExceptionHandler() {
 		return exceptionHandler;
 	}

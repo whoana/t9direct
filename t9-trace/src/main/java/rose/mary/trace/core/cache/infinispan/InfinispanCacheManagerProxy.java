@@ -15,6 +15,7 @@ import org.infinispan.transaction.TransactionMode;
 import rose.mary.trace.core.cache.CacheManagerProxy;
 import rose.mary.trace.core.config.CacheManagerConfig;
 import rose.mary.trace.core.data.cache.CacheConfig;
+import rose.mary.trace.core.data.common.State;
 import rose.mary.trace.core.data.common.StateEvent;
 import rose.mary.trace.core.data.common.Trace;
 
@@ -75,6 +76,17 @@ public class InfinispanCacheManagerProxy extends CacheManagerProxy {
 					botCacheConfig);
 			botCaches.add(cache);
 		}
+
+		// ----------------------------------------------------------------
+		// cloneCacheConfigs  setting
+		// ----------------------------------------------------------------
+		List<CacheConfig> cloneCacheConfigs = config.getCloneCacheConfigs();
+        for (CacheConfig cloneCacheConfig : cloneCacheConfigs) {
+			InfinispanCacheProxy<String, State> cache = createCache(diskPath, TransactionMode.NON_TRANSACTIONAL,
+				cloneCacheConfig);
+			cloneCaches.add(cache);
+		}
+
 
 		// ----------------------------------------------------------------
 		// finCacheConfig setting

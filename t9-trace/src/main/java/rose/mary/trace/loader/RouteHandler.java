@@ -116,9 +116,9 @@ public class RouteHandler {
                 State copyState = clone(state);
                 
                 finCache.put(botId, state);                
-                cloneCache.put(botId, copyState);
+                cloneCache.put(UUID.randomUUID().toString(), copyState);
                 
-                logger.info(Util.join("cln[",index,"]:", Util.toJSONString(copyState)));
+                logger.info(Util.join("thread:",Thread.currentThread().getName(),"[cache",index,"]:", Util.toJSONString(copyState)));
 
             }
         }        
@@ -150,7 +150,7 @@ public class RouteHandler {
         another.setModDate(state.getModDate());
         another.setRetry(state.getRetry());
         another.setRetryErrorMsg(state.getRetryErrorMsg());
-        another.setFinishSenderCount(state.getFinishNodeCount());
+        another.setFinishSenderCount(state.getFinishSenderCount());
         another.setBackendLog(state.getBackendLog());
 
         return another;

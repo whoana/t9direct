@@ -6,6 +6,7 @@ package rose.mary.trace.loader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -62,7 +63,7 @@ public class TraceLoader implements Runnable {
 
 	private boolean loadContents = true;
 
-	private Map<String, Trace> loadItems = new HashMap<String, Trace>();
+	private Map<String, Trace> loadItems = new LinkedHashMap<String, Trace>();
 
 	private long commitLapse = System.currentTimeMillis();
 

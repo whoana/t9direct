@@ -186,8 +186,13 @@ public class CloneLoader implements Runnable {
 	 
 
 		isShutdown = true;
-		if (thread != null)
+		if (thread != null){
 			thread.interrupt();
+			try {
+				thread.join();
+			} catch (InterruptedException e) { 
+			}
+		}
 	}
 
 	public void run() {
@@ -212,7 +217,7 @@ public class CloneLoader implements Runnable {
 	 *
 	 */
 	public void runGracefully() {
-		logger.info(Util.join("start botLoader:[" + name + "]"));
+		logger.info(Util.join("start cloneLoader:[" + name + "]"));
 		while (Thread.currentThread() == thread && !isShutdown) {
 			try {
 				if (loadBots.size() > 0 && (System.currentTimeMillis() - commitLapse >= maxCommitWait)) {

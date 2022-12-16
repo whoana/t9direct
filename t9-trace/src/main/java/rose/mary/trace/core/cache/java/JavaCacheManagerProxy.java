@@ -2,13 +2,12 @@ package rose.mary.trace.core.cache.java;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-
-import javafx.application.Preloader.StateChangeNotification;
+ 
 import rose.mary.trace.core.cache.CacheManagerProxy;
 import rose.mary.trace.core.cache.CacheProxy;
 import rose.mary.trace.core.config.CacheManagerConfig;
 import rose.mary.trace.core.data.cache.CacheConfig;
-import rose.mary.trace.core.data.common.Bot;
+ 
 import rose.mary.trace.core.data.common.InterfaceInfo;
 import rose.mary.trace.core.data.common.State;
 import rose.mary.trace.core.data.common.StateEvent;
@@ -58,7 +57,7 @@ public class JavaCacheManagerProxy extends CacheManagerProxy{
 		}
 
 		// ----------------------------------------------------------------
-		// botCacheConfigs setting
+		// cloneCacheConfigs  setting
 		// ----------------------------------------------------------------
 		List<CacheConfig> cloneCacheConfigs = config.getCloneCacheConfigs();
         for (CacheConfig cloneCacheConfig : cloneCacheConfigs) {
