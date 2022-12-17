@@ -241,8 +241,11 @@ public class CloneLoader implements Runnable {
 
 				for (String key : keys) { 
 					State state = cloneCache.get(key);
-					  
-					addBatch(key, state);
+					
+					logger.info(Util.join("cloneLoader:", Util.toJSONString(state)));
+ 
+					loadBots.put(key, state);
+
 					if (loadBots.size() > 0 && (loadBots.size() % commitCount == 0)) {
 						try { 
 							commit(); 
@@ -286,14 +289,7 @@ public class CloneLoader implements Runnable {
 		isShutdown = true;
 		logger.info(Util.join("stop botLoader:[" + name + "]"));
 	}
-
-	/**
-	 * @param trace
-	 */
-	private void addBatch(String key, State state) {
-		loadBots.put(key, state);
-		// dbLoadStates.put(key, state.getBotId());
-	}
+ 
 
 	/**
 	 *

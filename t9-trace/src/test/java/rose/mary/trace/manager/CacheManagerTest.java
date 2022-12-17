@@ -10,13 +10,18 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.Collection;
 
 import javax.transaction.TransactionManager;
 
 import org.junit.Before;
 import org.junit.Test;
 
+
+
 import rose.mary.trace.core.cache.CacheProxy;
+import rose.mary.trace.core.data.common.State;
 import rose.mary.trace.core.data.common.Trace;
 import rose.mary.trace.manager.CacheManager;
 import rose.mary.trace.manager.ConfigurationManager;
@@ -38,7 +43,7 @@ public class CacheManagerTest {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		System.setProperty("rose.mary.home", "/Users/whoana/Documents/gitlab/t9/t9-trace/bin/main");
+		System.setProperty("rose.mary.home", "/Users/whoana/DEV/workspace-vs-refactoring/t9/home");
 	}
 
 	// @Test
@@ -217,6 +222,41 @@ public class CacheManagerTest {
 			e.printStackTrace();
 		}
 
+	}
+
+
+
+	@Test
+	public void testCacheOrder() {
+		try {
+			ConfigurationManager configurationManager = new ConfigurationManager();
+			configurationManager.prepare();
+			cacheManager = new CacheManager(configurationManager.getCacheManagerConfig());
+			cacheManager.prepare();
+
+			CacheProxy<String, State> finCache = cacheManager.getCloneCaches().get(0);
+			for(int i = 0 ; i < 100 ; i ++){
+				State state = new State();
+				state.setBotId(i + "");
+				finCache.put(state.getBotId(), state);
+			}
+
+			Collection<State> states = finCache.values();
+			for (State state : states) {
+				System.out.println("id:" + state.getBotId());
+			}
+System.out.println("");
+			Set<String> keys = finCache.keys();
+			for (String key : keys) {
+				System.out.println("id:" + finCache.get(key).getBotId());
+			}
+
+			cacheManager.closeCache();
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

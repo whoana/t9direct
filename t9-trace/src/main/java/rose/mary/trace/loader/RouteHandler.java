@@ -18,7 +18,7 @@ import rose.mary.trace.core.util.IntCounter;
 
 public class RouteHandler {
 
-    Logger logger = LoggerFactory.getLogger("rose.mary.trace.SystemLogger");
+    Logger logger = LoggerFactory.getLogger(this.getClass());
 
     CacheProxy<String, State> finCache;
     
@@ -89,8 +89,8 @@ public class RouteHandler {
         }        
     }
 
+    int traceCount = 1 ;
     public void handleStateByClone(Trace trace) throws Exception {
-        
         synchronized (monitor) {
 
             String botId = Util.join(trace.getIntegrationId(), "@", trace.getDate(), "@", trace.getOriginHostId());
@@ -116,6 +116,8 @@ public class RouteHandler {
                 State copyState = clone(state);
                 
                 finCache.put(botId, state);                
+
+                copyState.setContext("trace" + traceCount ++);
                 cloneCache.put(UUID.randomUUID().toString(), copyState);
                 
                 logger.info(Util.join("thread:",Thread.currentThread().getName(),"[cache",index,"]:", Util.toJSONString(copyState)));
@@ -123,7 +125,7 @@ public class RouteHandler {
             }
         }        
     }
- 
+
     private State clone(State state) {
         State  another = new State();
         another.setCreateDate(state.getCreateDate());

@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Launch SystemUtil",
+            "request": "launch",
+            "mainClass": "rose.mary.trace.system.SystemUtil",
+            "projectName": "t9-trace"
+        },
+        {
+            "type": "java",
             "name": "Launch Library",
             "request": "launch",
             "mainClass": "rose.mary.trace.core.Library",
@@ -66,8 +73,7 @@
                 "-Dspring.config.location=/Users/whoana/DEV/workspace-vs-refactoring/t9/home/config/application.yml"
             ],
             "envFile": "${workspaceFolder}/.env"
-        }
-        ,
+        },
         {
             "type": "java",
             "name": "T9App",
