@@ -155,8 +155,8 @@ public class TraceServer {
 			// databasePolicyHandlerManager.ready();
 		} else if (TYPE_ROUTER.equals(type)) {
 			traceRouterManager.ready();
-			// botLoaderManager.ready();
-			cloneLoaderManager.ready();
+			botLoaderManager.ready();
+			// cloneLoaderManager.ready();
 			finisherManager.ready();
 			botErrorHandlerManager.ready();
 			traceErrorHandlerManager.ready();
@@ -237,8 +237,8 @@ public class TraceServer {
 			startFinisher();
 			startUnmatchHandler();
 		} else if (TYPE_ROUTER.equals(type)) {
-			// startBotLoader();
-			startCloneLoader();
+			startBotLoader();
+			// startCloneLoader();
 			startTraceRouter();
 			startChannel();
 			startFinisher();
@@ -309,8 +309,8 @@ public class TraceServer {
 			Thread.sleep(stopDelay);
 			stopTraceRouter();
 			Thread.sleep(stopDelay);
-			// stopBotLoader();
-			stopCloneLoader();
+			stopBotLoader();
+			// stopCloneLoader();
 			Thread.sleep(stopDelay);
 			stopFinisher();
 

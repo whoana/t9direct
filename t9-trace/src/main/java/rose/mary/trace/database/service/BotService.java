@@ -182,7 +182,9 @@ public class BotService {
 		boolean autoCommit = false;
 		SqlSession session = null;
 		try {
-			synchronized (monitor) {
+
+			     // 동시에 동일 레코드 처리는 되 않도록 하였으므로 스레드 동기화는 불필요한 것으로 판단됨. 
+			//synchronized (monitor) {
 				session = sqlSessionFactory.openSession(ExecutorType.BATCH, autoCommit);
 				// 20220825
 				// 처리 속도 향상을 위해 한번만 실행하는 것으로 함 정확한 로킹을 위해서는 for 안으로 이동 필요함.
@@ -243,7 +245,7 @@ public class BotService {
 				session.commit();
 
 				finCache.put(updateStates);
-			}
+			//}
 		} catch (Exception e) {
 			session.rollback();
 			throw e;

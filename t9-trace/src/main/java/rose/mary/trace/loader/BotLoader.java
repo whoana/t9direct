@@ -5,6 +5,7 @@ package rose.mary.trace.loader;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import org.slf4j.Logger;
@@ -60,6 +61,9 @@ public class BotLoader implements Runnable {
 
 	private Map<String, State> loadBots = new LinkedHashMap<String, State>();
 
+	private Set<State> stateSet = new LinkedHashSet<State>();
+	private Set<String> stateKeySet = new LinkedHashSet<String>(); 
+
 	// private Map<String, String> dbLoadStates = new LinkedHashMap<String,
 	// String>();
 
@@ -110,33 +114,48 @@ public class BotLoader implements Runnable {
 	 *
 	 * @throws Exception
 	 */
+	// Set 버전 
+	public void commit() throws Exception {
+		try {
+			if (tpm != null) tpm.count(stateSet.size());
+			botService.mergeBots(stateSet, finCache); 
+			botCache.removeAll(stateKeySet);
+		} catch (Exception e) {
+			// ----------------------------------------------------
+			// 20220905
+			// 예외 발생시 에러캐시로 옮기고 B.C데이터 삭제하는 부분에 대해서는
+			// 수정이 필요한지 고민해볼 부분이 있따.
+			// 에러큐로 빼지 않고 그대로 놔두고 시스템 종료, 문제해결, 재기동 후
+			// 에러큐에 넣지 안아도 B.C 에 있는 것은 재처리 되므로....
+			// ----------------------------------------------------
+			if (errorCache != null) {
+				errorCache.put(loadBots);
+				logger.error("bot load error", e);
+			}
+			botCache.removeAll(stateKeySet);
+
+			// 20221111
+			// errorCache를 이용하는 것으로 일단 수정하자.
+			// logger.error("BotLoader commit Exception", e);
+			// throw e;
+		} finally {
+			stateKeySet.clear();
+			stateSet.clear();
+			loadBots.clear();
+			
+			commitLapse = System.currentTimeMillis();
+
+		}
+	}
+
+	/* Map 버전  
 	public void commit() throws Exception {
 		try {
 			Collection<State> bots = loadBots.values();
-
-			if (Variables.debugLineByLine)
-				logger.debug(name + "-BLLBLD0101");
-
 			int count = loadBots.size();
-
-			if (tpm != null)
-				tpm.count(count);
-
-			if (Variables.debugLineByLine)
-				logger.debug(name + "-BLLBLD0102");
-
-			botService.mergeBots(bots, finCache); // SIGKILL LOG : SKL-BL001
-
-			if (Variables.debugLineByLine)
-				logger.debug(name + "-BLLBLD0103");
-
-			// dbCache.put(dbLoadStates); // SIGKILL LOG : SKL-BL002
-
-			botCache.removeAll(loadBots.keySet()); // SIGKILL LOG : SKL-BL003
-
-			if (Variables.debugLineByLine)
-				logger.debug(name + "-BLLBLD0104");
-
+			if (tpm != null) tpm.count(count);
+			botService.mergeBots(bots, finCache); 
+			botCache.removeAll(loadBots.keySet());
 		} catch (Exception e) {
 			// ----------------------------------------------------
 			// 20220905
@@ -165,7 +184,7 @@ public class BotLoader implements Runnable {
 
 		}
 	}
-
+	*/
 	/**
 	 *
 	 */
@@ -200,41 +219,23 @@ public class BotLoader implements Runnable {
 		thread.start();
 	}
 
-	public void stop() {
-		// if (Variables.startStopAsap) {
-		// stopAsap();
-		// } else {
-		// stopGracefully();
-		// }
-		// stopGracefully();
-
+	public void stop() { 
 		isShutdown = true;
 		if (thread != null)
 			thread.interrupt();
+			try {
+				thread.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 	}
 
-	public void run() {
-		// if (Variables.startStopAsap) {
-		// runAsap();
-		// } else {
-		// runGracefully();
-		// }
+	public void run() { 
 		runGracefully();
 
 	}
 
-	/**
-	 *
-	 */
-	/*
-	 * public void stopAsap() {
-	 * isShutdown = true;
-	 * if (thread != null)
-	 * thread.interrupt();
-	 *
-	 * }
-	 */
-
+	 
 	public void stopGracefully() {
 		isShutdown = true;
 		if (thread != null) {
@@ -246,87 +247,7 @@ public class BotLoader implements Runnable {
 		}
 	}
 
-	/*
-	 * public void runAsap() {
-	 * logger.info(Util.join("start botLoader:[" + name + "]"));
-	 * while (true) {
-	 * try {
-	 * 
-	 * if (thread.isInterrupted())
-	 * break;
-	 * 
-	 * if (loadBots.size() > 0 && (System.currentTimeMillis() - commitLapse >=
-	 * maxCommitWait)) {
-	 * commit();
-	 * }
-	 * 
-	 * Set<String> keys = botCache.keys();
-	 * if (keys == null || keys.size() == 0) {
-	 * try {
-	 * Thread.sleep(delayForNoMessage);
-	 * continue;
-	 * } catch (java.lang.InterruptedException ie) {
-	 * isShutdown = true;
-	 * break;
-	 * }
-	 * }
-	 * 
-	 * for (String key : keys) {
-	 * //State state = botCache.get(key);
-	 * 
-	 * //botCache 에는 State 가 아니라 StateEvent 가 들어 있는 것으로 변경한댜.
-	 * StateEvent evt = botCache.get(key);
-	 * String botId = evt.getBotId();
-	 * State state = finCache.get(botId);
-	 * 
-	 * addBatch(key, state);
-	 * if (loadBots.size() > 0 && (loadBots.size() % commitCount == 0)) {
-	 * try {
-	 * commit();
-	 * break;
-	 * } catch (Exception e) {
-	 * if (exceptionHandler != null) {
-	 * exceptionHandler.handle("", e);
-	 * } else {
-	 * logger.error("", e);
-	 * }
-	 * break;
-	 * }
-	 * }
-	 * }
-	 * 
-	 * } catch (Exception e) {
-	 * if (exceptionHandler != null) {
-	 * exceptionHandler.handle("", e);
-	 * } else {
-	 * logger.error("", e);
-	 * }
-	 * 
-	 * try {
-	 * Thread.sleep(exceptionDelay);
-	 * } catch (InterruptedException e1) {
-	 * isShutdown = true;
-	 * break;
-	 * }
-	 * 
-	 * }
-	 * }
-	 * 
-	 * try {
-	 * commit();
-	 * } catch (Exception e) {
-	 * if (exceptionHandler != null) {
-	 * exceptionHandler.handle("", e);
-	 * } else {
-	 * logger.error("", e);
-	 * }
-	 * }
-	 * 
-	 * isShutdown = true;
-	 * logger.info(Util.join("stop botLoader:[" + name + "]"));
-	 * }
-	 */
-
+	 
 	/**
 	 *
 	 */
@@ -334,12 +255,112 @@ public class BotLoader implements Runnable {
 		logger.info(Util.join("start botLoader:[" + name + "]"));
 		while (Thread.currentThread() == thread && !isShutdown) {
 			try {
+				// if (stateSet.size() > 0 && (System.currentTimeMillis() - commitLapse >= maxCommitWait)) {
+				// 	commit();
+				// }
+
+				Set<String> keys = null;
+				if (botCache.isAccessable()) {
+					keys = botCache.keys();
+				}
+				if (keys == null || keys.size() == 0) {
+					try {
+						Thread.sleep(delayForNoMessage);
+						continue;
+					} catch (java.lang.InterruptedException ie) {
+						isShutdown = true;
+						break;
+					}
+				}
+
+				for (String key : keys) {
+					// State state = botCache.get(key);
+					// botCache 에는 State 가 아니라 StateEvent 가 들어 있는 것으로 변경한댜.
+					StateEvent evt = botCache.get(key);
+					String botId = evt.getBotId();
+					State state = finCache.get(botId);
+					// logger.debug(name + "," + botCache.getName() + ",key=" + key + ", tk=[" +
+					// state.getContext() + "]");
+					if (state == null) {
+
+						state = fromDatabase != null ? fromDatabase.getState(botId) : state;
+						if (state == null) {
+							// DB 에도 없고 캐시에도 존재하지 않는 건
+							// 이경우 예외가 발생되어 캐시에서 장시간 남아있어던 건은 삭제시간이 도래하여 삭제되건에 해당됨,
+							// 삭제된 건에 대해서는 스킵 처리한다.
+							botCache.remove(key);
+							continue;
+						} else {
+							// F.C 에서 삭제되어 디비에서 최종상태를 조회하여 얻어온 값으로 백로그컬럼에 상황을 로깅하기 위해 backLog 값을 세팅한다.
+							if (State.ING.equals(state.getStatus())) {
+								state.setBackendLog(BEL.W0001);
+							} else {
+								state.setBackendLog(BEL.W0002);
+							}
+						}
+					}
+					logger.info(Util.join("hashcode:", state.hashCode() ,"bld:", Util.toJSONString(state)));
+
+					stateKeySet.add(key);
+					stateSet.add(state);
+					loadBots.put(state.getBotId(), state);
+
+					if (stateSet.size() >= commitCount) {
+						break;
+					}
+
+
+					// if (stateSet.size() > 0 && (stateSet.size() % commitCount == 0)) {
+					// 	try {
+					// 		commit();
+					// 		break;
+					// 	} catch (Exception e) {
+					// 		if (exceptionHandler != null) {
+					// 			exceptionHandler.handle("", e);
+					// 		} else {
+					// 			logger.error("", e);
+					// 		}
+					// 		break;
+					// 	}
+					// }
+				}
+				commit();
+			} catch (Exception e) {
+				if (exceptionHandler != null) {
+					exceptionHandler.handle("", e);
+				} else {
+					logger.error("", e);
+				}
+
+				try {
+					Thread.sleep(exceptionDelay);
+				} catch (InterruptedException e1) {
+					isShutdown = true;
+					break;
+				}
+			}
+		}
+
+		try {
+			commit();
+		} catch (Exception e) {
+			if (exceptionHandler != null) {
+				exceptionHandler.handle("", e);
+			} else {
+				logger.error("", e);
+			}
+		}
+
+		isShutdown = true;
+		logger.info(Util.join("stop botLoader:[" + name + "]"));
+	}
+	/* 
+	public void runGracefully() {
+		logger.info(Util.join("start botLoader:[" + name + "]"));
+		while (Thread.currentThread() == thread && !isShutdown) {
+			try {
 				if (loadBots.size() > 0 && (System.currentTimeMillis() - commitLapse >= maxCommitWait)) {
-					if (Variables.debugLineByLine)
-						logger.debug(name + "-BLLBLD0100");
 					commit();
-					if (Variables.debugLineByLine)
-						logger.debug(name + "-BLLBLD0199");
 				}
 
 				Set<String> keys = null;
@@ -382,15 +403,14 @@ public class BotLoader implements Runnable {
 							}
 						}
 					}
+					logger.info(Util.join("hashcode:", state.hashCode() ,"bld:", Util.toJSONString(state)));
 
-					addBatch(key, state);
+					loadBots.put(key, state);
+
+
 					if (loadBots.size() > 0 && (loadBots.size() % commitCount == 0)) {
 						try {
-							if (Variables.debugLineByLine)
-								logger.debug(name + "-BLLBLD0100");
 							commit();
-							if (Variables.debugLineByLine)
-								logger.debug(name + "-BLLBLD0199");
 							break;
 						} catch (Exception e) {
 							if (exceptionHandler != null) {
@@ -431,14 +451,9 @@ public class BotLoader implements Runnable {
 		isShutdown = true;
 		logger.info(Util.join("stop botLoader:[" + name + "]"));
 	}
+	*/
 
-	/**
-	 * @param trace
-	 */
-	private void addBatch(String key, State state) {
-		loadBots.put(key, state);
-		// dbLoadStates.put(key, state.getBotId());
-	}
+	 
 
 	/**
 	 *

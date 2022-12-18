@@ -24,3 +24,5 @@ t9home/config/logback-spring.xml
 t9home/config/sqlerror.json
 t9home/lib/t9-console-1.0.0.jar
 t9home/lib/t9-trace-1.0.0.jar
+home/.tmp.log.swp
+home/tmp.txt

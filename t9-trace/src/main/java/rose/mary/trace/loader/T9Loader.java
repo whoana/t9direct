@@ -210,7 +210,7 @@ public class T9Loader implements Runnable {
             try {
                 // logger.info(Util.join(name, " is alive!!!!!"));
                 // --------------------------------------------------------------------------
-                // do commit when times comming.
+                // do commit when times committing.
                 // --------------------------------------------------------------------------
                 if ((traceList.size() > 0 &&
                         (traceList.size() % commitCount == 0 ||

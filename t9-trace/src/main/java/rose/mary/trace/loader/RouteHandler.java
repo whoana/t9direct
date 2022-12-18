@@ -79,11 +79,14 @@ public class RouteHandler {
                 se.setId(uniqId);
                 se.setBotId(state.getBotId());
                 
+
+                state.setContext("trace" + traceCount ++);
+
                 finCache.put(botId, state);                
                 botCache.put(uniqId, se);
 
-                logger.info(Util.join("org[",index,"]:", Util.toJSONString(state)));
-                 
+ 
+                logger.info(Util.join("[cache",index,"]:", "first:", first, ",", Util.toJSONString(trace),":" , Util.toJSONString(state))); 
 
             }
         }        

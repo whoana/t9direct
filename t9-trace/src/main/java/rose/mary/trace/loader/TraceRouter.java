@@ -202,10 +202,7 @@ public class TraceRouter implements Runnable {
 		while (Thread.currentThread() == thread && !isShutdown) {
 
 			try {
-				if (loadItems.size() > 0 &&
-						(System.currentTimeMillis() - commitLapse >= maxCommitWait)) {
-					commit();
-				}
+				 
 
 				Set<String> keys = null;
 				if (distributeCache.isAccessable()) {
@@ -230,32 +227,40 @@ public class TraceRouter implements Runnable {
 
 					loadItems.put(key, trace);
 
-					routeHandler.handleStateByClone(trace);
+					// routeHandler.handleStateByClone(trace);
+					routeHandler.handleState(trace);
 
-					if (loadItems.size() > 0 && (loadItems.size() % commitCount == 0)) {
 
-						try {
-							commit();
-							break;
-						} catch (Exception e) {
-
-							if (exceptionHandler != null) {
-								exceptionHandler.handle("", e);
-							} else {
-								logger.error("", e);
-							}
-
-							try {
-								Thread.sleep(exceptionDelay);
-							} catch (InterruptedException e1) {
-								isShutdown = true;
-								return;
-							}
-
-							break;
-						}
+					if (loadItems.size() >= commitCount) {
+						break;
 					}
+
+					// if (loadItems.size() > 0 && (loadItems.size() % commitCount == 0)) {
+
+					// 	try {
+					// 		commit();
+					// 		break;
+					// 	} catch (Exception e) {
+
+					// 		if (exceptionHandler != null) {
+					// 			exceptionHandler.handle("", e);
+					// 		} else {
+					// 			logger.error("", e);
+					// 		}
+
+					// 		try {
+					// 			Thread.sleep(exceptionDelay);
+					// 		} catch (InterruptedException e1) {
+					// 			isShutdown = true;
+					// 			return;
+					// 		}
+
+					// 		break;
+					// 	}
+					// }
 				}
+				commit();
+				 
 
 			} catch (Exception e) {
 
