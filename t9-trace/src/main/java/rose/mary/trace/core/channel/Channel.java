@@ -327,14 +327,9 @@ public abstract class Channel implements Runnable {
 		while (Thread.currentThread() == thread && !isShutdown) {
 			try {
 
-				if ((cacheMap.size() > 0 && (cacheMap.size() % commitCount == 0
-						|| (System.currentTimeMillis() - commitLapse >= maxCommitWait)))) {
+				if ((cacheMap.size() > 0 && (cacheMap.size() % commitCount == 0 || (System.currentTimeMillis() - commitLapse >= maxCommitWait)))) {
 					try {
-						if (Variables.debugLineByLine)
-							logger.debug(name + "-CNLBLD0100");
 						commit();
-						if (Variables.debugLineByLine)
-							logger.debug(name + "-CNLBLD0199");
 						totalCommitCount = totalCommitCount + cacheMap.size();
 					} finally {
 						commitLapse = System.currentTimeMillis();
@@ -343,47 +338,33 @@ public abstract class Channel implements Runnable {
 
 				if (cache.getCheckedSize() >= maxCacheSize) {
 					// if (!ignoreCacheSize && cache.size() >= maxCacheSize) {
-					if (Variables.debugLineByLine)
-						logger.debug(name + "-CNLBLD0200");
 					try {
 						Thread.sleep(delayForMaxCache);
 					} catch (InterruptedException e) {
 						isShutdown = true;
-						// return;
 						break;
 					}
-					if (Variables.debugLineByLine)
-						logger.debug(name + "-CNLBLD0201");
 					logger.info(
-							"Channel[" + name + "] can't handle messages any more because the size of cache["
-									+ cache.getName() + "] is reached the max size:" + maxCacheSize);
+						Util.join(
+							"Channel[", name, "] can't handle messages any more because the size of cache[",
+							cache.getName(), "] is reached the max size:" + maxCacheSize));
 					continue;
 				}
 
 				Object msg = trace();
 				if (msg != null) {
 					try {
-						if (Variables.debugLineByLine)
-							logger.debug(name + "-CNLBLD0300");
 						Trace trace = parser.parse(msg);
 						checkRequiredField(trace);
-
-						if (Variables.debugLineByLine)
-							logger.debug(name + "-CNLBLD0301");
 						trace.setStateCheckHandlerId(stateCheckerId);
 						cacheMap.put(trace.getId(), trace);
-						if (Variables.debugLineByLine)
-							logger.debug(name + "-CNLBLD0399");
-
 					} finally {
 						if (tpm != null)
 							tpm.count();
 					}
 				}
 			} catch (RequiredFieldException re) {
-
 				logger.error("msg has no the required field(".concat(re.getFieldName()).concat(")"), re);
-
 				try {
 					Thread.sleep(delayOnException);
 				} catch (InterruptedException e1) {
