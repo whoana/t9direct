@@ -16,5 +16,7 @@ public class Variables {
 	public static String databaseName = "Oracle";
 
 	public static boolean debugLineByLine = true;
+
+	public static boolean stateTrace = false;
 	
 }

@@ -61,21 +61,6 @@
         },
         {
             "type": "java",
-            "name": "Spring Boot-T9<t9-trace>",
-            "request": "launch",
-            "cwd": "${workspaceFolder}",
-            "mainClass": "rose.mary.trace.T9",
-            "projectName": "t9-trace",
-            "args": "",
-            "vmArgs": [
-                "-Drose.mary.home=/Users/whoana/DEV/workspace-vs-refactoring/t9/home",
-                "-Dspring.profiles.active=production",
-                "-Dspring.config.location=/Users/whoana/DEV/workspace-vs-refactoring/t9/home/config/application.yml"
-            ],
-            "envFile": "${workspaceFolder}/.env"
-        },
-        {
-            "type": "java",
             "name": "T9App",
             "request": "launch",
             "cwd": "${workspaceFolder}",
@@ -83,7 +68,8 @@
             "projectName": "t9-trace",
             "args": "",
             "vmArgs": [
-                "-Drose.mary.home=/Users/whoana/DEV/workspace-vs-refactoring/t9/app",
+                "-Drose.mary.home=/Users/whoana/DEV/workspace-vs-refactoring/t9/home",
+                "-Dstate.trace=true",
                 "-Dspring.profiles.active=production",
                 "-Dspring.config.location=/Users/whoana/DEV/workspace-vs-refactoring/t9/app/config/application.yml"
             ],

@@ -1,8 +1,4 @@
 
-import java.util.Enumeration;
-import java.util.Properties;
-import java.util.Set;
-import java.util.function.BiConsumer;
 
 import rose.mary.trace.support.console.SystemConsole;
 import rose.mary.trace.support.install.InstallManager;

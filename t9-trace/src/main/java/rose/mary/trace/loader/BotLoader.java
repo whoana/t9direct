@@ -299,13 +299,15 @@ public class BotLoader implements Runnable {
 							}
 						}
 					}
-					//logger.info(Util.join("hashcode:", state.hashCode() ,"bld:", Util.toJSONString(state)));
-					// logger.info(Util.join(
-					// 	"bl:", state.getBotId(), 
-					// 	":status:", state.getStatus(), 
-					// 	", fnc:" + state.getFinishNodeCount(), 
-					// 	", fsc:", state.getFinishSenderCount()
-					// ));
+
+					if(Variables.stateTrace) {
+						logger.info(Util.join(
+							"bl:", state.getBotId(), 
+							":status:", state.getStatus(), 
+							", fnc:" + state.getFinishNodeCount(), 
+							", fsc:", state.getFinishSenderCount()
+						));
+					}
 
 					stateKeySet.add(key);
 					stateSet.add(state);

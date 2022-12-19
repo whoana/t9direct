@@ -199,6 +199,8 @@ public class T9
 	public static void main(String[] args) {
 		SpringApplicationBuilder sab = new SpringApplicationBuilder(T9.class);
 		{
+
+			Variables.stateTrace = Boolean.parseBoolean(System.getProperty("state.trace", "false"));
 			String iwannadie = System.getProperty("rose.mary.home", ".") + File.separator + "iwannadie.pid";
 			sab.build().addListeners(new ApplicationPidFileWriter(iwannadie));
 		}

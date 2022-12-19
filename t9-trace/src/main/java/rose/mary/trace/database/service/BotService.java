@@ -24,6 +24,7 @@ import rose.mary.trace.core.data.common.InterfaceInfo;
 import rose.mary.trace.core.data.common.State;
 import rose.mary.trace.core.data.common.Trace;
 import rose.mary.trace.core.data.common.Unmatch;
+import rose.mary.trace.core.envs.Variables;
 import rose.mary.trace.database.mapper.m01.BotMapper;
 import rose.mary.trace.manager.CacheManager;
 
@@ -232,12 +233,14 @@ public class BotService {
 				state.setLoaded(true);
 				// updateStates.put(state.getBotId(), state);
 
-				// logger.info(Util.join(
-				// "db:", state.getBotId(),
-				// ":status:", state.getStatus(),
-				// ", fnc:" + state.getFinishNodeCount(),
-				// ", fsc:", state.getFinishSenderCount()));
-
+					if(Variables.stateTrace) {
+					logger.info(Util.join(
+						"db:", state.getBotId(),
+						":status:", state.getStatus(),
+						", fnc:" + state.getFinishNodeCount(),
+						", fsc:", state.getFinishSenderCount()
+						));
+				}
 			}
 
 			session.flushStatements();

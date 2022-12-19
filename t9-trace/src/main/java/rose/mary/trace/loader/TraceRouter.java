@@ -232,30 +232,7 @@ public class TraceRouter implements Runnable {
 					if (loadItems.size() >= commitCount) {
 						break;
 					}
-
-					// if (loadItems.size() > 0 && (loadItems.size() % commitCount == 0)) {
-
-					// try {
-					// commit();
-					// break;
-					// } catch (Exception e) {
-
-					// if (exceptionHandler != null) {
-					// exceptionHandler.handle("", e);
-					// } else {
-					// logger.error("", e);
-					// }
-
-					// try {
-					// Thread.sleep(exceptionDelay);
-					// } catch (InterruptedException e1) {
-					// isShutdown = true;
-					// return;
-					// }
-
-					// break;
-					// }
-					// }
+ 
 				}
 				commit();
 

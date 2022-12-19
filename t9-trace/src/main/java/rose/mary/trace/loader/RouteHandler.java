@@ -12,6 +12,7 @@ import rose.mary.trace.core.cache.CacheProxy;
 import rose.mary.trace.core.data.common.State;
 import rose.mary.trace.core.data.common.StateEvent;
 import rose.mary.trace.core.data.common.Trace;
+import rose.mary.trace.core.envs.Variables;
 import rose.mary.trace.core.helper.checker.StateCheckerMap;
 
 import rose.mary.trace.core.util.IntCounter;
@@ -50,7 +51,11 @@ public class RouteHandler {
         synchronized (monitor) {
 
             String botId = Util.join(trace.getIntegrationId(), "@", trace.getDate(), "@", trace.getOriginHostId());
-            State state = finCache.get(botId);
+            
+            Integer index = getBotCacheIndex(botId);
+            
+            //라우팅 정보를 이용하여 finCache 를 스레드 별로 나누도록 소스 변경 고려 
+            State state = finCache.get(botId); 
             
             boolean first = false;
             if (state == null) {
@@ -66,7 +71,6 @@ public class RouteHandler {
             if (!state.skip()) {
                 state.setLoaded(false);
 
-                Integer index = getBotCacheIndex(botId);
 
                 CacheProxy<String, StateEvent> botCache = botCaches.get(index);
 
@@ -89,16 +93,17 @@ public class RouteHandler {
                 
                 botCache.put(uniqId, se);
 
-                //logger.info(Util.join("[cache",index,"]:", "first:", first, ",", Util.toJSONString(trace),":" , Util.toJSONString(state))); 
-
-                // logger.info(Util.join(
-                //     "rh:", state.getBotId(), 
-                //     ":status:", state.getStatus(), 
-                //     ", fnc:" + state.getFinishNodeCount(), 
-                //     ", fsc:", state.getFinishSenderCount(),
-                //     ", type:", trace.getType(),
-                //     ", host:", trace.getHostId() 
-                // ));
+                 
+                if(Variables.stateTrace) {
+                    logger.info(Util.join(
+                        "rh:", state.getBotId(), 
+                        ":status:", state.getStatus(), 
+                        ", fnc:" + state.getFinishNodeCount(), 
+                        ", fsc:", state.getFinishSenderCount(),
+                        ", type:", trace.getType(),
+                        ", host:", trace.getHostId() 
+                    ));
+                }
 
             }
         }        
