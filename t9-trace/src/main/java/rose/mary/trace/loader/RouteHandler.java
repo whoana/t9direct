@@ -79,20 +79,31 @@ public class RouteHandler {
                 se.setId(uniqId);
                 se.setBotId(state.getBotId());
                 
+ 
 
-                state.setContext("trace" + traceCount ++);
+                // 20221219 예외 검중중 
+                // 예외 발생됨,  ISPN000136 , Error executing command PutKeyValueCommand on Cache 'fc01', writing keys [BATCH_571@20221106210810351688@HOST_SEND]               
+                // 주석 처리해보자 
 
-                finCache.put(botId, state);                
+                //finCache.put(botId, state); 
+                
                 botCache.put(uniqId, se);
 
- 
-                logger.info(Util.join("[cache",index,"]:", "first:", first, ",", Util.toJSONString(trace),":" , Util.toJSONString(state))); 
+                //logger.info(Util.join("[cache",index,"]:", "first:", first, ",", Util.toJSONString(trace),":" , Util.toJSONString(state))); 
+
+                // logger.info(Util.join(
+                //     "rh:", state.getBotId(), 
+                //     ":status:", state.getStatus(), 
+                //     ", fnc:" + state.getFinishNodeCount(), 
+                //     ", fsc:", state.getFinishSenderCount(),
+                //     ", type:", trace.getType(),
+                //     ", host:", trace.getHostId() 
+                // ));
 
             }
         }        
     }
-
-    int traceCount = 1 ;
+ 
     public void handleStateByClone(Trace trace) throws Exception {
         synchronized (monitor) {
 
@@ -120,7 +131,7 @@ public class RouteHandler {
                 
                 finCache.put(botId, state);                
 
-                copyState.setContext("trace" + traceCount ++);
+ 
                 cloneCache.put(UUID.randomUUID().toString(), copyState);
                 
                 logger.info(Util.join("thread:",Thread.currentThread().getName(),"[cache",index,"]:", Util.toJSONString(copyState)));

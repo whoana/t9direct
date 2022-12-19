@@ -202,7 +202,6 @@ public class TraceRouter implements Runnable {
 		while (Thread.currentThread() == thread && !isShutdown) {
 
 			try {
-				 
 
 				Set<String> keys = null;
 				if (distributeCache.isAccessable()) {
@@ -230,37 +229,35 @@ public class TraceRouter implements Runnable {
 					// routeHandler.handleStateByClone(trace);
 					routeHandler.handleState(trace);
 
-
 					if (loadItems.size() >= commitCount) {
 						break;
 					}
 
 					// if (loadItems.size() > 0 && (loadItems.size() % commitCount == 0)) {
 
-					// 	try {
-					// 		commit();
-					// 		break;
-					// 	} catch (Exception e) {
+					// try {
+					// commit();
+					// break;
+					// } catch (Exception e) {
 
-					// 		if (exceptionHandler != null) {
-					// 			exceptionHandler.handle("", e);
-					// 		} else {
-					// 			logger.error("", e);
-					// 		}
+					// if (exceptionHandler != null) {
+					// exceptionHandler.handle("", e);
+					// } else {
+					// logger.error("", e);
+					// }
 
-					// 		try {
-					// 			Thread.sleep(exceptionDelay);
-					// 		} catch (InterruptedException e1) {
-					// 			isShutdown = true;
-					// 			return;
-					// 		}
+					// try {
+					// Thread.sleep(exceptionDelay);
+					// } catch (InterruptedException e1) {
+					// isShutdown = true;
+					// return;
+					// }
 
-					// 		break;
-					// 	}
+					// break;
+					// }
 					// }
 				}
 				commit();
-				 
 
 			} catch (Exception e) {
 

@@ -61,7 +61,7 @@ public class DefaultCleaner implements Cleaner {
 		if (check1 || check2) {
 			String botId = state.getBotId();
 			logger.debug("delete botId[" + botId + "]check1:" + check1 + ", check2:" + check2);
-			finCache.remove(state.getBotId());
+			finCache.remove(state.getBotId()); // 예외 발생됨,  ISPN000299: Unable to acquire lock after 10 seconds for key ONLINE_473@20221114040332974145@HOST_SEND and requestor CommandInvocation:<local>:1603169. Lock is held by CommandInvocation:<local>:1603114
 			routingCache.remove(state.getBotId());
 			return 1;
 		} else {

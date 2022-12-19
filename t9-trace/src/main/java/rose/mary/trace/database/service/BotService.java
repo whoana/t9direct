@@ -183,69 +183,68 @@ public class BotService {
 		SqlSession session = null;
 		try {
 
-			     // 동시에 동일 레코드 처리는 되 않도록 하였으므로 스레드 동기화는 불필요한 것으로 판단됨. 
-			//synchronized (monitor) {
-				session = sqlSessionFactory.openSession(ExecutorType.BATCH, autoCommit);
-				// 20220825
-				// 처리 속도 향상을 위해 한번만 실행하는 것으로 함 정확한 로킹을 위해서는 for 안으로 이동 필요함.
-				String date = Util.getFormatedDate(Util.DEFAULT_DATE_FORMAT_MI);
-				Map<String, State> updateStates = new HashMap<String, State>();
-				for (State state : states) {
-				
-					// String date = Util.getFormatedDate(Util.DEFAULT_DATE_FORMAT_MI);
-					Bot bot = new Bot();
-					InterfaceInfo interfaceInfo = cacheManager.getInterfaceCache().get(state.getIntegrationId());
-					if (interfaceInfo == null) {
-						// 매치되는 것이 없으면 TOP0503에는 저장하지 않는다.
-						// 대신 UnmatchCache 에 integrationId 를 키값으로 Unmatch 오브젝트를 등록해 둔다.
+			// 동시에 동일 레코드 처리는 되 않도록 하였으므로 스레드 동기화는 불필요한 것으로 판단됨.
+			// synchronized (monitor) {
+			session = sqlSessionFactory.openSession(ExecutorType.BATCH, autoCommit);
+			// 20220825
+			// 처리 속도 향상을 위해 한번만 실행하는 것으로 함 정확한 로킹을 위해서는 for 안으로 이동 필요함.
+			String date = Util.getFormatedDate(Util.DEFAULT_DATE_FORMAT_MI);
+			// Map<String, State> updateStates = new HashMap<String, State>();
+			for (State state : states) {
 
-						// 저장 하려면 아래 로직으로 임시인터페이스 정보를 만들어 등록하도록 처리할 수 있다.(보류)
-						// interfaceInfo = new InterfaceInfo();
-						// interfaceInfo.setInterfaceId(state.getIntegrationId());
-						// interfaceInfo.setIntegrationId(state.getIntegrationId());
-						// interfaceInfo.setInterfaceNm(NOT_MATCH_NM);
+				// String date = Util.getFormatedDate(Util.DEFAULT_DATE_FORMAT_MI);
+				Bot bot = new Bot();
+				InterfaceInfo interfaceInfo = cacheManager.getInterfaceCache().get(state.getIntegrationId());
+				if (interfaceInfo == null) {
+					// 매치되는 것이 없으면 TOP0503에는 저장하지 않는다.
+					// 대신 UnmatchCache 에 integrationId 를 키값으로 Unmatch 오브젝트를 등록해 둔다.
 
-						state.setMatch(State.MATCH_NO);
-						state.setRegDate(date);
-						state.setModDate(date);
+					// 저장 하려면 아래 로직으로 임시인터페이스 정보를 만들어 등록하도록 처리할 수 있다.(보류)
+					// interfaceInfo = new InterfaceInfo();
+					// interfaceInfo.setInterfaceId(state.getIntegrationId());
+					// interfaceInfo.setIntegrationId(state.getIntegrationId());
+					// interfaceInfo.setInterfaceNm(NOT_MATCH_NM);
 
-						Unmatch unmatch = cacheManager.getUnmatchCache().get(state.getIntegrationId());
-						if (unmatch == null) {
-							unmatch = new Unmatch();
-							unmatch.setIntegrationId(state.getIntegrationId());
-							unmatch.setMatch(State.MATCH_NO);
-							unmatch.setRegDate(date);
-						} else {
-							unmatch.setModDate(date);
-						}
-						cacheManager.getUnmatchCache().put(state.getIntegrationId(), unmatch);
+					state.setMatch(State.MATCH_NO);
+					state.setRegDate(date);
+					state.setModDate(date);
 
+					Unmatch unmatch = cacheManager.getUnmatchCache().get(state.getIntegrationId());
+					if (unmatch == null) {
+						unmatch = new Unmatch();
+						unmatch.setIntegrationId(state.getIntegrationId());
+						unmatch.setMatch(State.MATCH_NO);
+						unmatch.setRegDate(date);
 					} else {
-						state.setMatch(State.MATCH_YES);
-						bot.setState(state);
-						bot.setInterfaceInfo(interfaceInfo);
-						bot.setRegDate(date);
-						bot.setModDate(date);
-						// logger.debug("add batchItem:" + Util.toJSONString(bot));
-						int res = session.update("rose.mary.trace.database.mapper.m01.BotMapper.restore", bot);
+						unmatch.setModDate(date);
 					}
-					state.setLoaded(true);
-					updateStates.put(state.getBotId(), state);
+					cacheManager.getUnmatchCache().put(state.getIntegrationId(), unmatch);
 
-					// logger.info(
-					// Util.join(state.getBotId(), "thread:", Thread.currentThread().getName(),
-					// ",state:",
-					// Util.toJSONString(state)));
-
-					logger.info(Util.join("dbt:", Util.toJSONString(state)));
-
+				} else {
+					state.setMatch(State.MATCH_YES);
+					bot.setState(state);
+					bot.setInterfaceInfo(interfaceInfo);
+					bot.setRegDate(date);
+					bot.setModDate(date);
+					// logger.debug("add batchItem:" + Util.toJSONString(bot));
+					int res = session.update("rose.mary.trace.database.mapper.m01.BotMapper.restore", bot);
 				}
+				state.setLoaded(true);
+				// updateStates.put(state.getBotId(), state);
 
-				session.flushStatements();
-				session.commit();
+				// logger.info(Util.join(
+				// "db:", state.getBotId(),
+				// ":status:", state.getStatus(),
+				// ", fnc:" + state.getFinishNodeCount(),
+				// ", fsc:", state.getFinishSenderCount()));
 
-				finCache.put(updateStates);
-			//}
+			}
+
+			session.flushStatements();
+			session.commit();
+
+			// finCache.put(updateStates);
+			// }
 		} catch (Exception e) {
 			session.rollback();
 			throw e;
