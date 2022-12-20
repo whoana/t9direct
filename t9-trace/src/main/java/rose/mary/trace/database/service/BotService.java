@@ -5,8 +5,10 @@ package rose.mary.trace.database.service;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
@@ -101,12 +103,19 @@ public class BotService {
 		SqlSession session = null;
 		try {
 			synchronized (monitor) {
+				
+				CacheProxy<String, Integer> routingCache = cacheManager.getRoutingCache();
+
 				session = sqlSessionFactory.openSession(ExecutorType.BATCH, autoCommit);
 				// 20220825
 				// 처리 속도 향상을 위해 한번만 실행하는 것으로 함 정확한 로킹을 위해서는 for 안으로 이동 필요함.
 				String date = Util.getFormatedDate(Util.DEFAULT_DATE_FORMAT_MI);
 				// Map<String, State> updateStates = new HashMap<String, State>();
+
+				Set<String> finishedStates = new HashSet<String>();
+
 				for (State state : states) {
+					if(state.isFinish()) finishedStates.add(state.getBotId());
 					// String date = Util.getFormatedDate(Util.DEFAULT_DATE_FORMAT_MI);
 					Bot bot = new Bot();
 					InterfaceInfo interfaceInfo = cacheManager.getInterfaceCache().get(state.getIntegrationId());
@@ -147,15 +156,30 @@ public class BotService {
 					state.setLoaded(true);
 					// updateStates.put(state.getBotId(), state);
 
-					// logger.info(
-					// Util.join(state.getBotId(), "thread:", Thread.currentThread().getName(),
-					// ",state:",
-					// Util.toJSONString(state)));
+					if(Variables.stateTrace) {
+						logger.info(Util.join(
+							"db:", state.getBotId(),
+							":status:", state.getStatus(),
+							", tdc:" + state.getTodoNodeCount(),
+							", fnc:" + state.getFinishNodeCount(),
+							", fsc:", state.getFinishSenderCount()
+							));
+					}
 				}
 
 				session.flushStatements();
 				session.commit();
 
+				try{
+					finCache.removeAll(finishedStates);
+					routingCache.removeAll(finishedStates);
+					if(Variables.stateTrace)
+						logger.info(Util.join("delete finished states:", finishedStates.size()));
+				}catch(Exception e){
+					logger.debug("fail to delete states:", e);
+				}finally{
+					finishedStates.clear();
+				}
 			}
 
 			// finCache.put(updateStates);
@@ -182,6 +206,7 @@ public class BotService {
 	public void mergeBots(Collection<State> states, CacheProxy<String, State> finCache) throws Exception {
 		boolean autoCommit = false;
 		SqlSession session = null;
+		CacheProxy<String, Integer> routingCache = cacheManager.getRoutingCache();
 		try {
 
 			// 동시에 동일 레코드 처리는 되 않도록 하였으므로 스레드 동기화는 불필요한 것으로 판단됨.
@@ -191,7 +216,12 @@ public class BotService {
 			// 처리 속도 향상을 위해 한번만 실행하는 것으로 함 정확한 로킹을 위해서는 for 안으로 이동 필요함.
 			String date = Util.getFormatedDate(Util.DEFAULT_DATE_FORMAT_MI);
 			// Map<String, State> updateStates = new HashMap<String, State>();
+
+			Set<String> finishedStates = new HashSet<String>();
+
 			for (State state : states) {
+
+				if(state.isFinish()) finishedStates.add(state.getBotId());
 
 				// String date = Util.getFormatedDate(Util.DEFAULT_DATE_FORMAT_MI);
 				Bot bot = new Bot();
@@ -233,7 +263,7 @@ public class BotService {
 				state.setLoaded(true);
 				// updateStates.put(state.getBotId(), state);
 
-					if(Variables.stateTrace) {
+				if(Variables.stateTrace) {
 					logger.info(Util.join(
 						"db:", state.getBotId(),
 						":status:", state.getStatus(),
@@ -245,6 +275,17 @@ public class BotService {
 
 			session.flushStatements();
 			session.commit();
+
+			try{
+				finCache.removeAll(finishedStates);
+				routingCache.removeAll(finishedStates);
+				if(Variables.stateTrace)
+					logger.info(Util.join("delete finished states:", finishedStates.size()));
+			}catch(Exception e){
+				logger.debug("fail to delete states:", e);
+			}finally{
+				finishedStates.clear();
+			}
 
 			// finCache.put(updateStates);
 			// }
@@ -360,6 +401,8 @@ public class BotService {
 			Collection<Unmatch> unmatchs = unmatchCache.values();
 
 			for (Unmatch unmatch : unmatchs) {
+
+ 
 
 				InterfaceInfo interfaceInfo = cacheManager.getInterfaceCache().get(unmatch.getIntegrationId());
 
