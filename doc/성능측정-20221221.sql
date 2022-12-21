@@ -1,3 +1,30 @@
+
+---------------------------
+-- 측정 SQL
+---------------------------
+SELECT 't1' AS "구간(TOP0501)" , round(a.cnt/a.dur) AS tps, cnt AS "처리건수" , etime AS "종료시간", stime AS "시작시간", dur AS "종료시간-시작시간"
+FROM (
+        SELECT count(*) AS cnt ,
+                SUBSTR(max(REG_DATE),0,14)  AS etime,
+                SUBSTR(min(REG_DATE),0,14)  AS stime,
+                round(
+                        (TO_DATE(SUBSTR(max(REG_DATE),0,14),'yyyymmddhh24miss') - TO_DATE(SUBSTR(min(REG_DATE),0,14),'yyyymmddhh24miss')
+                        ) * 24 * 60 * 60) AS dur
+        FROM TOP0501 WHERE REG_DATE >= '20221221080000000' AND REG_DATE  <= '20221221235900000'
+) a
+UNION all
+SELECT 't3' AS "구간(TOP0503)" , round(a.cnt/a.dur) AS tps, cnt AS "처리건수" , etime AS "종료시간", stime AS "시작시간", dur AS "종료시간-시작시간"
+FROM (
+        SELECT count(*) AS cnt ,
+                SUBSTR(max(REG_DATE),0,14)  AS etime,
+                SUBSTR(min(REG_DATE),0,14)  AS stime,
+                round(
+                        (TO_DATE(SUBSTR(max(REG_DATE),0,14),'yyyymmddhh24miss') - TO_DATE(SUBSTR(min(REG_DATE),0,14),'yyyymmddhh24miss')
+                        ) * 24 * 60 * 60) AS dur
+        FROM TOP0503 WHERE REG_DATE >= '20221221080000000' AND REG_DATE  <= '20221221235900000'
+    ) a;
+
+
 SELECT
 	round((a.cnt + b.cnt ) / b.dur) AS tps,
 	a.cnt 	AS t1_cnt,
@@ -56,3 +83,10 @@ FROM (
 -- APP  TYPE         TPS	TOP0501_CNT	    TOP0501_START_TIME  TOP0501_END_TIME	TOP0501_DUR	TOP0503_CNT	TOP0503_START_TIME	TOP0503_END_TIME	TOP0503_DUR	
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --  B  완료건처리      4146	    150000	        20221221130500	    20221221130539	    39	        20000	    20221221130500	    20221221130541	    41
+
+
+--- 프로세스 1개 스레드 4개 (cache vendor : java ) 
+------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- APP  TYPE         TPS	TOP0501_CNT	    TOP0501_START_TIME  TOP0501_END_TIME	TOP0501_DUR	TOP0503_CNT	TOP0503_START_TIME	TOP0503_END_TIME	TOP0503_DUR	
+------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--  B  완료건처리      4250		150000			20221221151414		20221221151452		38			20000		20221221151414		20221221151454		40
