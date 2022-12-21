@@ -194,56 +194,35 @@ public class TraceLoader implements Runnable {
 	}
 
 	public void stop() {
-		if (Variables.startStopAsap) {
-			stopAsap();
-		} else {
-			stopGracefully();
-		}
+		stopGracefully();
 	}
 
 	public void run() {
-		if (Variables.startStopAsap) {
-			runAsap();
-		} else {
-			runGracefully();
-		}
+ 
+		runGracefully();
+		 
 	}
 
 	public void stopGracefully() {
 		isShutdown = true;
 		if (thread != null) {
 			thread.interrupt();
-			// try {
-			// thread.join();
-			// } catch (InterruptedException e) {
-			// logger.error("", e);
-			// }
+			try {
+				thread.join();
+			} catch (InterruptedException e) {
+				logger.error("", e);
+			}
 		}
 	}
+ 
 
-	public void stopAsap() {
-		isShutdown = true;
-		if (thread != null)
-			thread.interrupt();
-
-	}
-
-	/**
-	 * @deprecated since 202209
-	 */
-	public void runAsap() {
+	public void runGracefully() {
 
 		logger.info(Util.join("start loader:[" + name + "]"));
 
-		while (true) {
+		while (Thread.currentThread() == thread && !isShutdown) {
 
-			try {
-				if (thread.isInterrupted())
-					break;
-
-				if (loadItems.size() > 0 && (System.currentTimeMillis() - commitLapse >= maxCommitWait)) {
-					commit();
-				}
+			try { 
 
 				Collection<Trace> values = distributeCache.values();
 				if (values == null || values.size() == 0) {
@@ -260,42 +239,17 @@ public class TraceLoader implements Runnable {
 				for (Trace trace : values) {
 					String key = trace.getId();
 					trace.setRegDate(regDate);
-
 					if (mergeCache.containsKey(key)) {
-						// delete the trace loaded already.
 						distributeCache.remove(key);
 					}
-
 					loadItems.put(key, trace);
-
-					// expect to delte block comming soon.
-					// if (oldKey != null && oldKey.equals(key))
-					// dups.add(key);
-
-					if (loadItems.size() > 0 && (loadItems.size() % commitCount == 0)) {
-
-						try {
-							commit();
-							break;
-						} catch (Exception e) {
-
-							if (exceptionHandler != null) {
-								exceptionHandler.handle("", e);
-							} else {
-								logger.error("", e);
-							}
-
-							try {
-								Thread.sleep(exceptionDelay);
-							} catch (InterruptedException e1) {
-								isShutdown = true;
-								return;
-							}
-
-							break;
-						}
+ 
+					if (loadItems.size() >= commitCount) {
+						break;
 					}
+					 
 				}
+				commit();
 
 			} catch (Exception e) {
 
@@ -329,6 +283,8 @@ public class TraceLoader implements Runnable {
 		logger.info(Util.join("stop loader:[" + name + "]"));
 	}
 
+	/* src block backup 20221221 */
+	/* 
 	public void runGracefully() {
 
 		logger.info(Util.join("start loader:[" + name + "]"));
@@ -423,6 +379,8 @@ public class TraceLoader implements Runnable {
 		isShutdown = true;
 		logger.info(Util.join("stop loader:[" + name + "]"));
 	}
+	*/
+
 
 	public ExceptionHandler getExceptionHandler() {
 		return exceptionHandler;
