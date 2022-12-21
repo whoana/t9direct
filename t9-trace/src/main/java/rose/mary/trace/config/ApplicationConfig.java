@@ -406,11 +406,8 @@ public class ApplicationConfig {
 				systemErrorTestManager,
 				cacheManager);
 		server.ready();
-		
-		boolean direct = configurationManager.getConfig().isDirect();
-		server.setDirectLoaderManager(directLoaderManager);
-		server.setDirect(direct);
-
+		 
+		server.setDirectLoaderManager(directLoaderManager);		 
 		server.setTraceRouterManager(traceRouterManager);
 		String type = configurationManager.getConfig().getType();
 		server.setType(type);

@@ -15,8 +15,7 @@ package rose.mary.trace.core.config;
 public class Config {
 
 	String type = "B";
-
-	boolean direct = false;
+ 
 
 	
 	// add at 20221213 
@@ -244,14 +243,6 @@ public class Config {
 
 	public void setSystemErrorTestManagerConfig(SystemErrorTestManagerConfig systemErrorTestManagerConfig) {
 		this.systemErrorTestManagerConfig = systemErrorTestManagerConfig;
-	}
-
-	public boolean isDirect() {
-		return direct;
-	}
-
-	public void setDirect(boolean direct) {
-		this.direct = direct;
 	}
  
 	public boolean isLoadNotFinishedState() {

@@ -77,7 +77,7 @@ public class DirectLoaderManager {
             ThroughputMonitor tpm,
             TraceService traceService,
             BotService botService,
-            LoaderManagerConfig loaderManagerConfig, 
+            LoaderManagerConfig loaderManagerConfig,
             StateHandler stateHandler) {
 
         this.channelManagerConfig = channelManagerConfig;
@@ -124,7 +124,9 @@ public class DirectLoaderManager {
                         startMOMChannel(cc, momChannelExceptionHandler,
                                 channelManagerConfig.getOldStateCheckHandlerConfig(), stateHandler);
                         break;
-                    // break;
+                    case Channel.TYPE_REST:
+                        logger.info("skip RestChannel ....");
+                        break;
                     default:
                         throw new Exception(Util.join("Unknown Channel type:", cc.getType()));
                     // break;
@@ -191,7 +193,6 @@ public class DirectLoaderManager {
         boolean loadContents = loaderManagerConfig.isLoadContents();
 
         CacheProxy<String, State> finCache = cacheManager.getFinCache();
-
 
         int threadCount = config.getThreadCount();
         for (int i = 0; i < threadCount; i++) {
