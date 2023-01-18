@@ -71,7 +71,7 @@
                 "-Drose.mary.home=/Users/whoana/DEV/workspace-vs-refactoring/t9/home",
                 "-Dstate.trace=true",
                 "-Dspring.profiles.active=production",
-                "-Dspring.config.location=/Users/whoana/DEV/workspace-vs-refactoring/t9/app/config/application.yml"
+                "-Dspring.config.location=/Users/whoana/DEV/workspace-vs-refactoring/t9/home/config/application.yml"
             ],
             "envFile": "${workspaceFolder}/.env"
         }

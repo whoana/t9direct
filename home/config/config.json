@@ -1,6 +1,5 @@
 {
 	"type": "C",
-	"direct": true,
 	"loadNotFinishedState": true,
 	"loadNotFinishedStateDurationMin": -60,
 	"channelManagerConfig": {

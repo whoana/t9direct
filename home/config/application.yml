@@ -30,18 +30,15 @@ spring:
       jdbcUrl: jdbc:oracle:thin:@10.10.1.125:1521:orclcdb
       driver-class-name: oracle.jdbc.driver.OracleDriver
       username: elog
-      password: mocomsys1
-      
+      password: mocomsys1      
       # jdbcUrl: jdbc:postgresql://10.10.1.10:5432/iipdb
       # driver-class-name: org.postgresql.Driver
       # username: iip
       # password: iip
-
       minimum-idle: 14
       maximum-pool-size: 20
       #idle-timeout: 10000
       connection-timeout: 5000
-
   #  datasource02:
   #   #jdbcUrl: jdbc:oracle:thin:@10.10.1.35:1521:iip
   #   jdbcUrl: jdbc:oracle:thin:@idc.mocomsys.com:31521:iip
