@@ -23,7 +23,8 @@
 				"RBRK": 40,
 				"R": 50,
 				"RECV": 50,
-				"RCVR": 50
+				"RCVR": 50,
+				"SNRC": 60
 			}
 		},
 		"channelConfigs": [

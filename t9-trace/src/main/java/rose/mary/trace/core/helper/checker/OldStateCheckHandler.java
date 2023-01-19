@@ -24,6 +24,12 @@ public class OldStateCheckHandler implements StateChecker {
 	public static final int KEY_RBRK = 40;
 	public static final int KEY_RCVR = 50;
 
+	/**
+	 * 우미건설 1건발생 트레킹 패턴 process_mode 처리 코드 추가 
+	 * 20230119  
+	 */
+	public static final int KEY_SNRC = 60;
+
 	final static public String ST_SUCCESS = "00";
 	final static public String ST_ING = "01";
 	final static public String ST_FAIL = "99";
@@ -111,6 +117,24 @@ public class OldStateCheckHandler implements StateChecker {
 				} else {
 				}
 				break;
+
+			case KEY_SNRC:
+				/**
+				 * 20230119
+				 * 송수신이 동시에 오는 CASE ?
+				 * 우미건설에서 BRKR 1건만 로 오는 경우가 있어 확인하는 과정에서 발견함.
+				 */
+				state.setTodoNodeCount(1);
+				state.setFinishSenderCount(state.getFinishSenderCount() + 1);				
+				state.setFinishNodeCount(state.getFinishNodeCount() + 1);
+				if (ST_FAIL.equals(status)) {
+					state.setErrorCode(errorCode);
+					state.setErrorMessage(errorMessage);
+					state.setErrorNodeCount(state.getErrorNodeCount() + 1);
+				} else {
+				}
+				break;
+				
 			default:
 				if (ST_FAIL.equals(status)) {
 					state.setErrorCode(errorCode);
