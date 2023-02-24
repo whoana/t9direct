@@ -29,18 +29,74 @@
 		},
 		"channelConfigs": [
 			{
-				"name": "ILinkChannel01",
+				"name": "MQChannelNHTest1",
 				"threadCount": 1,
 				"type": 0,
-				"hostName": "10.10.1.10",
-				"qmgrName": "TEST",
-				"port": 11111,
-				"userId": "mi",
-				"password": "mi",
+				"hostName": "10.10.0.48",
+				"qmgrName": "NH1",
+				"port": 1122,
+				"userId": "mqm",
+				"password": "mqm",
 				"channelName": "SYSTEM.DEF.SVRCONN",
-				"queueName": "TEST.LQ",
+				"queueName": "TRACE.EQ",
 				"waitTime": 1000,
-				"module": "i",
+				"module": "w",
+				"ccsid": 1208,
+				"characterSet": 1208,
+				"autoCommit": false,
+				"bindMode": false,
+				"maxCommitWait": 100,
+				"delayForNoMessage": 1000,
+				"commitCount": 200,
+				"maxCacheSize": 5000000,
+				"delayForMaxCache": 300,
+				"cacheIndex": [
+					0
+				],
+				"healthCheck": true,
+				"disable": false
+			},
+			{
+				"name": "MQChannelNHTest2",
+				"threadCount": 1,
+				"type": 0,
+				"hostName": "10.10.0.48",
+				"qmgrName": "NH1",
+				"port": 1122,
+				"userId": "mqm",
+				"password": "mqm",
+				"channelName": "SYSTEM.DEF.SVRCONN",
+				"queueName": "TRACE.EQ",
+				"waitTime": 1000,
+				"module": "w",
+				"ccsid": 1208,
+				"characterSet": 1208,
+				"autoCommit": false,
+				"bindMode": false,
+				"maxCommitWait": 100,
+				"delayForNoMessage": 1000,
+				"commitCount": 200,
+				"maxCacheSize": 5000000,
+				"delayForMaxCache": 300,
+				"cacheIndex": [
+					1
+				],
+				"healthCheck": true,
+				"disable": false
+			},
+			{
+				"name": "MQChannelNHTest3",
+				"threadCount": 1,
+				"type": 0,
+				"hostName": "10.10.0.48",
+				"qmgrName": "NH1",
+				"port": 1122,
+				"userId": "mqm",
+				"password": "mqm",
+				"channelName": "SYSTEM.DEF.SVRCONN",
+				"queueName": "TRACE.EQ",
+				"waitTime": 1000,
+				"module": "w",
 				"ccsid": 1208,
 				"characterSet": 1208,
 				"autoCommit": false,
@@ -72,6 +128,20 @@
 				"heapSize": 10000,
 				"diskSize": 1,
 				"maxEntries": 1000000
+			},
+			{
+				"name": "dc02",
+				"memoryUnit": 3,
+				"heapSize": 10000,
+				"diskSize": 1,
+				"maxEntries": 1000000
+			},
+			{
+				"name": "dc03",
+				"memoryUnit": 3,
+				"heapSize": 10000,
+				"diskSize": 1,
+				"maxEntries": 1000000
 			}
 		],
 		"mergeCacheConfig": {
@@ -91,6 +161,20 @@
 		"botCacheConfigs": [
 			{
 				"name": "bc01",
+				"memoryUnit": 3,
+				"heapSize": 10000,
+				"diskSize": 1,
+				"maxEntries": 100000
+			},
+			{
+				"name": "bc02",
+				"memoryUnit": 3,
+				"heapSize": 10000,
+				"diskSize": 1,
+				"maxEntries": 100000
+			},
+			{
+				"name": "bc03",
 				"memoryUnit": 3,
 				"heapSize": 10000,
 				"diskSize": 1,

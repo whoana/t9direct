@@ -1,3 +1,12 @@
+/**
+ * <pre>
+ *  -----------------------------------------
+ *  T9 Direct version loader 
+ *  -----------------------------------------
+ *  Direct loader does everything here for
+ *  loading Trace and summarizing 
+ * </pre>
+ */
 package rose.mary.trace.loader;
 
 import java.util.ArrayList;
@@ -278,9 +287,8 @@ public class T9Loader implements Runnable {
 
                 try {
                     Thread.sleep(delayOnException);
-                } catch (InterruptedException e1) {
+                } catch (InterruptedException e) {
                     isShutdown = true;
-                    // return;
                     break;
                 }
 
@@ -296,22 +304,20 @@ public class T9Loader implements Runnable {
                 logger.info("Length of message is 0, continue to get next message");
                 try {
                     Thread.sleep(delayOnException);
-                } catch (InterruptedException e1) {
+                } catch (InterruptedException e) {
                     isShutdown = true;
                     break;
                 }
 
-            } catch (NoMoreMessageException e) {
+            } catch (NoMoreMessageException ne) {
                 try {
                     Thread.sleep(delayForNoMessage);
-                } catch (InterruptedException e1) {
+                } catch (InterruptedException e) {
                     isShutdown = true;
                     break;
                 }
             } catch (HaveNoTraceInfoException e) {
-                // 에러 캐시에 따로 보관할지 옵션처리해주자
-                // errorMessageCache.put(UUID.randomUUID(),d);
-                // 에러케시에 넣지 말고 그냥 로그만 남기자. 2022.10
+
                 byte[] data = e.getData();
                 String msg = "Trace msg have no header";
                 msg = data == null ? msg
@@ -323,10 +329,8 @@ public class T9Loader implements Runnable {
                     Thread.sleep(delayForNoMessage);
                 } catch (InterruptedException e1) {
                     isShutdown = true;
-                    // return;
                     break;
                 }
-
             } catch (Exception e) {
 
                 try {
@@ -336,19 +340,17 @@ public class T9Loader implements Runnable {
                 }
 
                 if (channelExceptionHandler != null) {
-                    channelExceptionHandler.handleException("", e);
+                    channelExceptionHandler.handleException("UnknownException:", e);
                 } else {
-                    logger.error("", e);
+                    logger.error("UnknownException:", e);
                 }
 
                 try {
                     Thread.sleep(delayOnException);
                 } catch (InterruptedException e1) {
                     isShutdown = true;
-                    // return;
                     break;
                 }
-
             }
         }
 
