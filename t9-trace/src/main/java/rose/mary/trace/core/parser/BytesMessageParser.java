@@ -193,8 +193,6 @@ public class BytesMessageParser extends Parser {
               field = MTEStruct.c_recv_spoke_cnt;
             else if (qName.equalsIgnoreCase(MTEStruct.c_hop_cnt))
               field = MTEStruct.c_hop_cnt;
-            else if (qName.equalsIgnoreCase(MTEStruct.c_time))
-              field = MTEStruct.c_time;
             else if (qName.equalsIgnoreCase(MTEStruct.c_appl_type))
               field = MTEStruct.c_appl_type;
             else if (qName.equalsIgnoreCase(MTEStruct.c_timezone))
