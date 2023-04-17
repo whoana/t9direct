@@ -59,7 +59,7 @@ public class TraceServiceTest {
 			trace.setRecordCount(0);
 			trace.setDataSize(0);
 			trace.setCompress("0");
-			trace.setData("000".getBytes());
+			trace.setData("000");
 			trace.setTodoNodeCount(1);
 			trace.setId(now);
 			trace.setSeq(20);

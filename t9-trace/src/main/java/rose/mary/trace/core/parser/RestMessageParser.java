@@ -71,11 +71,16 @@ public class RestMessageParser extends Parser {
 		trace.setDataSize(Util.isEmpty(dataSize) ? 0 : Integer.parseInt(dataSize));
 
 		trace.setCompress(compress);
-		trace.setData(data.getBytes());
+		
+		//20230417
+		//change
+		//BLOB --> CLOB, TEXT 타입 변경 
+		//trace.setData(data.getBytes());
+		trace.setData(data); 
+
 		trace.setTodoNodeCount(todoNodeCount);
 
-		trace.setId(Util.join(trace.getIntegrationId(), idSeperator, trace.getDate(), idSeperator, hostId, idSeperator,
-				processId));
+		trace.setId(Util.join(trace.getIntegrationId(), idSeperator, trace.getDate(), idSeperator, hostId, idSeperator, processId));
 
 		if (nodeMap != null) {
 			trace.setSeq(nodeMap.getOrDefault(trace.getType(), 0));
