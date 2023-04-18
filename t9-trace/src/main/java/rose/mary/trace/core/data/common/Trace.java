@@ -83,11 +83,7 @@ public class Trace implements Serializable {
 
 	String app;
 
-	//20230417
-	//change
-	//BLOB --> CLOB, TEXT 타입 변경 
-	//byte[] data;
-	String data;
+	byte[] data;
 
 	int todoNodeCount = 1;
 
@@ -109,7 +105,7 @@ public class Trace implements Serializable {
 	/**
 	 * @param id the id to set
 	 */
-	public void setId(final String id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -123,7 +119,7 @@ public class Trace implements Serializable {
 	/**
 	 * @param integrationId the interfaceId to set
 	 */
-	public void setIntegrationId(final String integrationId) {
+	public void setIntegrationId(String integrationId) {
 		this.integrationId = integrationId;
 	}
 
@@ -137,7 +133,7 @@ public class Trace implements Serializable {
 	/**
 	 * @param hostId the hostId to set
 	 */
-	public void setHostId(final String hostId) {
+	public void setHostId(String hostId) {
 		this.hostId = hostId;
 	}
 
@@ -151,7 +147,7 @@ public class Trace implements Serializable {
 	/**
 	 * @param date the date to set
 	 */
-	public void setDate(final String date) {
+	public void setDate(String date) {
 		this.date = date;
 	}
 
@@ -165,7 +161,7 @@ public class Trace implements Serializable {
 	/**
 	 * @param processId the processId to set
 	 */
-	public void setProcessId(final String processId) {
+	public void setProcessId(String processId) {
 		this.processId = processId;
 	}
 
@@ -179,7 +175,7 @@ public class Trace implements Serializable {
 	/**
 	 * @param processDate the processDate to set
 	 */
-	public void setProcessDate(final String processDate) {
+	public void setProcessDate(String processDate) {
 		this.processDate = processDate;
 	}
 
@@ -193,7 +189,7 @@ public class Trace implements Serializable {
 	/**
 	 * @param processEndDate the processEndDate to set
 	 */
-	public void setProcessEndDate(final String processEndDate) {
+	public void setProcessEndDate(String processEndDate) {
 		this.processEndDate = processEndDate;
 	}
 
@@ -207,7 +203,7 @@ public class Trace implements Serializable {
 	/**
 	 * @param type the type to set
 	 */
-	public void setType(final String type) {
+	public void setType(String type) {
 		this.type = type;
 	}
 
@@ -221,7 +217,7 @@ public class Trace implements Serializable {
 	/**
 	 * @param ip the ip to set
 	 */
-	public void setIp(final String ip) {
+	public void setIp(String ip) {
 		this.ip = ip;
 	}
 
@@ -235,7 +231,7 @@ public class Trace implements Serializable {
 	/**
 	 * @param status the status to set
 	 */
-	public void setStatus(final String status) {
+	public void setStatus(String status) {
 		this.status = status;
 	}
 
@@ -249,7 +245,7 @@ public class Trace implements Serializable {
 	/**
 	 * @param errorCode the errorCode to set
 	 */
-	public void setErrorCode(final String errorCode) {
+	public void setErrorCode(String errorCode) {
 		this.errorCode = errorCode;
 	}
 
@@ -263,7 +259,7 @@ public class Trace implements Serializable {
 	/**
 	 * @param errorMessage the errorMessage to set
 	 */
-	public void setErrorMessage(final String errorMessage) {
+	public void setErrorMessage(String errorMessage) {
 		this.errorMessage = errorMessage;
 	}
 
@@ -277,7 +273,7 @@ public class Trace implements Serializable {
 	/**
 	 * @param recordCount the recordCount to set
 	 */
-	public void setRecordCount(final int recordCount) {
+	public void setRecordCount(int recordCount) {
 		this.recordCount = recordCount;
 	}
 
@@ -291,7 +287,7 @@ public class Trace implements Serializable {
 	/**
 	 * @param dataSize the dataSize to set
 	 */
-	public void setDataSize(final int dataSize) {
+	public void setDataSize(int dataSize) {
 		this.dataSize = dataSize;
 	}
 
@@ -305,21 +301,21 @@ public class Trace implements Serializable {
 	/**
 	 * @param compress the compress to set
 	 */
-	public void setCompress(final String compress) {
+	public void setCompress(String compress) {
 		this.compress = compress;
 	}
 
 	/**
 	 * @return the data
 	 */
-	public String getData() {
+	public byte[] getData() {
 		return data;
 	}
 
 	/**
 	 * @param data the data to set
 	 */
-	public void setData(String data) {
+	public void setData(byte[] data) {
 		this.data = data;
 	}
 
@@ -333,7 +329,7 @@ public class Trace implements Serializable {
 	/**
 	 * @param originHostId the originHostId to set
 	 */
-	public void setOriginHostId(final String originHostId) {
+	public void setOriginHostId(String originHostId) {
 		this.originHostId = originHostId;
 	}
 
@@ -347,7 +343,7 @@ public class Trace implements Serializable {
 	/**
 	 * @param os the os to set
 	 */
-	public void setOs(final String os) {
+	public void setOs(String os) {
 		this.os = os;
 	}
 
@@ -368,14 +364,14 @@ public class Trace implements Serializable {
 	/**
 	 * @param app the app to set
 	 */
-	public void setApp(final String app) {
+	public void setApp(String app) {
 		this.app = app;
 	}
 
 	/**
 	 * @param todoNodeCount the todoNodeCount to set
 	 */
-	public void setTodoNodeCount(final int todoNodeCount) {
+	public void setTodoNodeCount(int todoNodeCount) {
 		this.todoNodeCount = todoNodeCount;
 	}
 
@@ -389,7 +385,7 @@ public class Trace implements Serializable {
 	/**
 	 * @param regId the regId to set
 	 */
-	public void setRegId(final String regId) {
+	public void setRegId(String regId) {
 		this.regId = regId;
 	}
 
@@ -403,7 +399,7 @@ public class Trace implements Serializable {
 	/**
 	 * @param regDate the regDate to set
 	 */
-	public void setRegDate(final String regDate) {
+	public void setRegDate(String regDate) {
 		this.regDate = regDate;
 	}
 
@@ -412,7 +408,7 @@ public class Trace implements Serializable {
 		return Util.toJSONString(this);
 	}
 
-	public void setStateCheckHandlerId(final String stateCheckHandlerId) {
+	public void setStateCheckHandlerId(String stateCheckHandlerId) {
 		this.stateCheckHandlerId = stateCheckHandlerId;
 	}
 
@@ -430,7 +426,7 @@ public class Trace implements Serializable {
 	/**
 	 * @param retry the retry to set
 	 */
-	public void setRetry(final int retry) {
+	public void setRetry(int retry) {
 		this.retry = retry;
 	}
 
@@ -444,24 +440,24 @@ public class Trace implements Serializable {
 	/**
 	 * @param retryErrorMsg the retryErrorMsg to set
 	 */
-	public void setRetryErrorMsg(final String retryErrorMsg) {
+	public void setRetryErrorMsg(String retryErrorMsg) {
 		this.retryErrorMsg = retryErrorMsg;
 	}
 
-	public void setPreviousHostId(final String previousHostId) {
+	public void setPreviousHostId(String previousHostId) {
 		this.previousHostId = previousHostId;
 	}
 
-	public void setPreviousProcessId(final String previousProcessId) {
+	public void setPreviousProcessId(String previousProcessId) {
 		this.previousProcessId = previousProcessId;
 	}
 
-	public void setTimezone(final String timezone) {
+	public void setTimezone(String timezone) {
 		this.timezone = timezone;
 
 	}
 
-	public void setElapsedTime(final String elapsedTime) {
+	public void setElapsedTime(String elapsedTime) {
 		this.elapsedTime = elapsedTime;
 	}
 
@@ -485,7 +481,7 @@ public class Trace implements Serializable {
 		return seq;
 	}
 
-	public void setSeq(final int seq) {
+	public void setSeq(int seq) {
 		this.seq = seq;
 	}
 

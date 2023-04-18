@@ -71,12 +71,8 @@ public class RestMessageParser extends Parser {
 		trace.setDataSize(Util.isEmpty(dataSize) ? 0 : Integer.parseInt(dataSize));
 
 		trace.setCompress(compress);
-		
-		//20230417
-		//change
-		//BLOB --> CLOB, TEXT 타입 변경 
-		//trace.setData(data.getBytes());
-		trace.setData(data); 
+		  
+		trace.setData(data.getBytes());
 
 		trace.setTodoNodeCount(todoNodeCount);
 

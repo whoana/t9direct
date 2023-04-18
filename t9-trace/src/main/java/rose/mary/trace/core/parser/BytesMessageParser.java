@@ -73,6 +73,8 @@ public class BytesMessageParser extends Parser {
       e.setData(usrData);
       throw e;
     }
+    
+    
 
     Trace trace = parseUsrData(usrData);
     // trace.setData(data);
@@ -96,8 +98,9 @@ public class BytesMessageParser extends Parser {
     //------------------------------------------------
     // 20230417
     //read data part
-    //------------------------------------------------
-    {
+    //------------------------------------------------   
+    /* 
+    { 
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       while(true){
         byte[] b = new byte[1024];
@@ -106,25 +109,25 @@ public class BytesMessageParser extends Parser {
         baos.write(b);
         baos.flush();
       }
-      if(baos.size() > 0){
-        String dataString = new String(baos.toByteArray());
-        trace.setData(dataString); // 기본 charset UTF8 
+      if(baos.size() > 0){        
+        trace.setData(baos.toByteArray()); 
       }
     }
+    */
+
     //method 2 : 
-    // 데이터 길이  = 전체 메시지 길이 - strucLength
-    /*
+    // 데이터 길이  = 전체 메시지 길이 - strucLength    
     {
       long msgBodyLength = msg.getBodyLength();
       long len = msgBodyLength - strucLength;
       byte[] b = new byte[(int)len];
       int res = msg.readBytes(b, (int)len);
       if(res > -1){
-        String dataString = new String(b);
-        trace.setData(dataString); // 기본 charset UTF8 
+        trace.setData(b); // 기본 charset UTF8 
       }
     }
-    */
+
+    //String usrDataString = new String(trace.getData());
    
     return trace;
   }
@@ -165,6 +168,8 @@ public class BytesMessageParser extends Parser {
 
         if (qName.equalsIgnoreCase(MTEStruct.a)) {
           category = MTEStruct.a;
+        } else if (qName.equalsIgnoreCase(MTEStruct.j)) {
+          category = MTEStruct.j;
         } else if (qName.equalsIgnoreCase(MTEStruct.b)) {
           category = MTEStruct.b;
         } else if (qName.equalsIgnoreCase(MTEStruct.c)) {
@@ -290,11 +295,12 @@ public class BytesMessageParser extends Parser {
         } catch (Exception e) {
         }
 
+        
         if (MTEStruct.a.equals(category) && field != null) {
-          if (field.equals(MTEStruct.a_host_id))
-            trace.setOriginHostId(
-                buffer.toString().trim());
-          else if (field.equals(MTEStruct.a_intf_id))
+          if (field.equals(MTEStruct.a_host_id)){
+            String v = buffer.toString().trim();
+            trace.setOriginHostId(v);
+          }else if (field.equals(MTEStruct.a_intf_id))
             trace.setIntegrationId(
                 buffer.toString().trim());
           else if (field.equals(MTEStruct.a_date))
@@ -382,6 +388,9 @@ public class BytesMessageParser extends Parser {
     String os = trace.getOs(); // os varchar(50)
     if (os != null && os.length() > 50)
       trace.setOs(os.substring(0, 50));
+
+
+    logger.debug("parse msg: " + Util.toJSONPrettyString(trace));
 
     return trace;
   }

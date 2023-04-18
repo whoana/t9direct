@@ -165,13 +165,9 @@ public class MQMessageParser extends Parser {
 			trace.setRecordCount(recordCount);
 			trace.setDataSize(dataSize);
 			trace.setCompress(compress);
-
-			//20230417
-			//change
-			//BLOB --> CLOB, TEXT 타입 변경 
-			//trace.setData(data);
+ 
 			if(data.length > 0)
-				trace.setData(new String(data));// 기본 charset UTF8
+				trace.setData(data);
 
 			trace.setTodoNodeCount(todoNodeCount);
 			trace.setTimezone(timezone);

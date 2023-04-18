@@ -273,6 +273,12 @@ public class T9Loader implements Runnable {
                 }
             } catch (RequiredFieldException re) {
 
+                try {
+                    commit(); // 문제의 메시지를 버린다.
+                } catch (Exception e2) {
+                    logger.error("", e2);
+                }
+
                 logger.info("ERROR:SKIP:PARSING:001:Trace msg has no the required field(".concat(re.getFieldName())
                         .concat(")"), re);
 
@@ -309,6 +315,13 @@ public class T9Loader implements Runnable {
                     break;
                 }
             } catch (HaveNoTraceInfoException e) {
+
+                try {
+                    commit(); // 문제의 메시지를 버린다.
+                } catch (Exception e2) {
+                    logger.error("", e2);
+                }
+
                 // 에러 캐시에 따로 보관할지 옵션처리해주자
                 // errorMessageCache.put(UUID.randomUUID(),d);
                 // 에러케시에 넣지 말고 그냥 로그만 남기자. 2022.10
@@ -370,11 +383,11 @@ public class T9Loader implements Runnable {
     // 5 commit mom
     private void commit() throws Exception {
         int count = traceList.size();
-
-        // method a
-        traceLoadService.load(traceList, loadError, loadContents);
-        botService.mergeBotsSynchronized(stateList, finCache);
-
+        if (count > 0) {
+            // method a
+            traceLoadService.load(traceList, loadError, loadContents);
+            botService.mergeBotsSynchronized(stateList, finCache);
+        }
         // method b
         // botService.mergeBots(traceList, loadError, loadContents, stateList,
         // finCache);
@@ -411,10 +424,12 @@ public class T9Loader implements Runnable {
      */
     private void checkRequiredField(Trace trace) throws RequiredFieldException {
 
+        logger.debug(Util.toJSONPrettyString(trace));
+
         if (Util.isEmpty(trace.getIntegrationId()))
             throw new RequiredFieldException("integrationId");
         if (Util.isEmpty(trace.getOriginHostId()))
-            throw new RequiredFieldException("orginHostId");
+            throw new RequiredFieldException("originHostId");
         if (Util.isEmpty(trace.getDate()))
             throw new RequiredFieldException("date");
         if (Util.isEmpty(trace.getProcessId()))
