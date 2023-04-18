@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import pep.per.mint.common.util.Util;
 import rose.mary.trace.core.cache.CacheProxy;
 import rose.mary.trace.core.data.common.State;
 import rose.mary.trace.core.data.common.Trace;
@@ -55,11 +56,15 @@ public class TraceService {
 				// session.insert("rose.mary.trace.database.mapper.m01.TraceMapper.insertError",
 				// trace);
 				// }
-				//
-				// if(loadContents) {
-				// session.insert("rose.mary.trace.database.mapper.m01.TraceMapper.insertContents",
-				// trace);
-				// }
+				
+				// 20230416 
+				// ADD 
+				// 우미건설 요청 (ILIN MI 사이트)
+				// 테스트 미완료
+				if (loadContents && !Util.isEmpty(trace.getData())) {					
+					session.delete("rose.mary.trace.database.mapper.m01.TraceMapper.deleteData", trace);
+					session.insert("rose.mary.trace.database.mapper.m01.TraceMapper.insertData", trace);
+				}
 			}
 
 			bs = session.flushStatements();
@@ -102,11 +107,8 @@ public class TraceService {
 		return traceMapper.getList(integrationId, trackingDate, orgHostId);
 	}
 
-
-
-
-
-	public void load(Collection<Trace> col, boolean loadError, boolean loadContents, Collection<State> states, CacheProxy<String, State> finCache) throws Exception {
+	public void load(Collection<Trace> col, boolean loadError, boolean loadContents, Collection<State> states,
+			CacheProxy<String, State> finCache) throws Exception {
 		boolean autoCommit = false;
 		SqlSession session = null;
 		List<BatchResult> bs = null;
@@ -124,10 +126,16 @@ public class TraceService {
 				// trace);
 				// }
 				//
-				// if(loadContents) {
-				// session.insert("rose.mary.trace.database.mapper.m01.TraceMapper.insertContents",
-				// trace);
-				// }
+				
+				// 20230416 
+				// ADD 
+				// 우미건설 요청 (ILIN MI 사이트)
+				// 테스트 미완료
+				if (loadContents && !Util.isEmpty(trace.getData())) {					
+					session.delete("rose.mary.trace.database.mapper.m01.TraceMapper.deleteData", trace);
+					session.insert("rose.mary.trace.database.mapper.m01.TraceMapper.insertData", trace);
+				}
+				
 			}
 
 			bs = session.flushStatements();

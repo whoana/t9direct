@@ -4,6 +4,7 @@
 package rose.mary.trace.core.parser;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.Map;
 import javax.jms.BytesMessage;
 import javax.xml.parsers.ParserConfigurationException;
@@ -92,6 +93,40 @@ public class BytesMessageParser extends Parser {
 
     trace.setProcessEndDate(trace.getProcessDate());
 
+    //------------------------------------------------
+    // 20230417
+    //read data part
+    //------------------------------------------------
+    //method 1 : 
+    {
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      while(true){
+        byte[] b = new byte[1024];
+        int res = msg.readBytes(b);
+        if(res == -1) break;
+        baos.write(b);
+        baos.flush();
+      }
+      if(baos.size() > 0){
+        String dataString = new String(baos.toByteArray());
+        trace.setData(dataString); // 기본 charset UTF8 
+      }
+    }
+    //method 2 : 
+    // 데이터 길이  = 전체 메시지 길이 - strucLength
+    /*
+    {
+      long msgBodyLength = msg.getBodyLength();
+      long len = msgBodyLength - strucLength;
+      byte[] b = new byte[(int)len];
+      int res = msg.readBytes(b, (int)len);
+      if(res > -1){
+        String dataString = new String(b);
+        trace.setData(dataString); // 기본 charset UTF8 
+      }
+    }
+    */
+   
     return trace;
   }
 
@@ -193,8 +228,6 @@ public class BytesMessageParser extends Parser {
               field = MTEStruct.c_recv_spoke_cnt;
             else if (qName.equalsIgnoreCase(MTEStruct.c_hop_cnt))
               field = MTEStruct.c_hop_cnt;
-            else if (qName.equalsIgnoreCase(MTEStruct.c_time))
-              field = MTEStruct.c_time;
             else if (qName.equalsIgnoreCase(MTEStruct.c_appl_type))
               field = MTEStruct.c_appl_type;
             else if (qName.equalsIgnoreCase(MTEStruct.c_timezone))

@@ -97,6 +97,29 @@
 		<result property="regDate" 		  column="reg_date"/>
 	</resultMap>
 
+	<delete id="deleteData" parameterType="rose.mary.trace.core.data.common.Trace">
+		delete from TOP0502 
+		 where INTEGRATION_ID = #{integrationId,jdbcType=VARCHAR}
+		   and TRACKING_DATE  = #{date,			jdbcType=VARCHAR}
+		   and ORG_HOST_ID    = #{originHostId,	jdbcType=VARCHAR}
+		   and PROCESS_ID 	  =	#{processId,	jdbcType=VARCHAR}   
+	</delete>
+
+	<insert id="insertData" parameterType="rose.mary.trace.core.data.common.Trace">
+		insert into TOP0502 (
+			 INTEGRATION_ID
+			,TRACKING_DATE
+			,ORG_HOST_ID
+			,PROCESS_ID
+			,DATA
+		) values (
+			 #{integrationId,	jdbcType=VARCHAR}
+			,#{date,			jdbcType=VARCHAR}
+			,#{originHostId,	jdbcType=VARCHAR}
+			,#{processId,	 	jdbcType=VARCHAR}
+			,#{data}
+		)
+	</insert>
 
 	<update id="upsert" parameterType="rose.mary.trace.core.data.common.Trace">
 		<choose>

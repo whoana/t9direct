@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import rose.mary.trace.core.config.OldStateCheckHandlerConfig;
 import rose.mary.trace.core.data.common.State;
 import rose.mary.trace.core.data.common.Trace;
+import rose.mary.trace.system.SystemUtil;
 
 public class OldStateCheckHandler implements StateChecker {
 
@@ -40,6 +41,16 @@ public class OldStateCheckHandler implements StateChecker {
 		this.config = config;
 	}
 
+
+	/**
+	 * <pre>
+	 * 	State 객체 업데이트 
+	 *  --------------------------------
+	 *  cost 처리시간 값 구하는 부분은 미완성 
+	 *  송신 시작 시간을 State 객체에  마킹하고 
+	 *  수신 도착 시간에 State 의 cost 값에 계산해서 넣는 방식을 고려해 보자 .
+	 * <pre>
+	 */
 	@Override
 	public void checkAndSet(boolean first, Trace trace, State state) {
 
@@ -51,12 +62,7 @@ public class OldStateCheckHandler implements StateChecker {
 		int recordCount = trace.getRecordCount();
 		int dataAmount = trace.getDataSize();
 		String compress = trace.getCompress();
-		int cost = 0;
-		try {
-			cost = Integer.parseInt(trace.getElapsedTime());
-		} catch (Exception e) {
-			cost = 0;
-		}
+		int cost = 0;		
 		int todoNodeCount = trace.getTodoNodeCount();
 		String errorCode = trace.getErrorCode();
 		String errorMessage = trace.getErrorMessage();
@@ -116,6 +122,27 @@ public class OldStateCheckHandler implements StateChecker {
 					state.setErrorNodeCount(state.getErrorNodeCount() + 1);
 				} else {
 				}
+
+
+				// @Todo
+				// 응답 도착 시점에 전체 cost 를 구할 수 있으나 
+				// 현재 런타임 구조에서는 트래킹이 순차적으로 수집되지 않을 경우가 있어 
+				// 전체 cost 계산하는데 문제가 있다. 
+				// 일단 RCVR, SNRC 일 때문 cost 를 계산하도록 해둔다. 
+				// SNDR, BRKR 이 RCVR, SNRC 보다 나중에 와서 값을 덮어 씌울 수 있으므로  해당 상태에서는 cost 값을 계산하지 않는다. (20230404).
+				// -------------------------------------------------------------
+				// cost 구하기 
+				// -------------------------------------------------------------
+				try {
+					String processDate = trace.getProcessDate();
+					long elapsedMillis = SystemUtil.getElapsedMillis(processDate, trackingDate);			
+					cost = (int)elapsedMillis;
+				} catch (Exception e) {
+					cost = 0;
+				}
+				state.setCost(cost);
+
+
 				break;
 
 			case KEY_SNRC:
@@ -133,6 +160,26 @@ public class OldStateCheckHandler implements StateChecker {
 					state.setErrorNodeCount(state.getErrorNodeCount() + 1);
 				} else {
 				}
+
+
+				// @Todo
+				// 응답 도착 시점에 전체 cost 를 구할 수 있으나 
+				// 현재 런타임 구조에서는 트래킹이 순차적으로 수집되지 않을 경우가 있어 
+				// 전체 cost 계산하는데 문제가 있다. 
+				// 일단 RCVR, SNRC 일 때문 cost 를 계산하도록 해둔다.
+				// SNDR, BRKR 이 RCVR, SNRC 보다 나중에 와서 값을 덮어 씌울 수 있으므로  해당 상태에서는 cost 값을 계산하지 않는다. (20230404).
+				// -------------------------------------------------------------
+				// cost 구하기 
+				// -------------------------------------------------------------
+				try {
+					String processDate = trace.getProcessDate();
+					long elapsedMillis = SystemUtil.getElapsedMillis(processDate, trackingDate);			
+					cost = (int)elapsedMillis;
+				} catch (Exception e) {
+					cost = 0;
+				}
+				state.setCost(cost);
+				
 				break;
 				
 			default:
@@ -144,6 +191,8 @@ public class OldStateCheckHandler implements StateChecker {
 				}
 				break;
 		}
+
+		
 
 		// 트레킹 키값 조합 디버깅시 사용할 용도로 남겨둠 .20220826
 		// String tk = state.getBotId() + "@" + typeSeq;
