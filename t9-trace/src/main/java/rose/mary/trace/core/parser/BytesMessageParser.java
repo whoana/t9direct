@@ -377,15 +377,11 @@ public class BytesMessageParser extends Parser {
     parser.parse(is, dh);
 
     /**
-     * 메지지 내용 및 길이 체크
+     * 메지지 내용 체크
      */
     String os = trace.getOs(); // os varchar(50)
     if (os != null && os.length() > 50)
       trace.setOs(os.substring(0, 50));
-
-    String errorMessage = trace.getErrorMessage(); // error_message varchar(40000)
-    if (errorMessage != null && errorMessage.length() > 2000)
-      trace.setErrorMessage(errorMessage.substring(0, 2000));
 
     return trace;
   }
