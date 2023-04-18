@@ -97,7 +97,6 @@ public class BytesMessageParser extends Parser {
     // 20230417
     //read data part
     //------------------------------------------------
-    //method 1 : 
     {
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       while(true){
