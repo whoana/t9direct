@@ -1,5 +1,5 @@
 {
-	"type": "B",
+	"type": "A",
 	"loadNotFinishedState": true,
 	"loadNotFinishedStateDurationMin": -60,
 	"channelManagerConfig": {
@@ -52,7 +52,7 @@
 					0,1,2
 				],
 				"healthCheck": false,
-				"disable":true
+				"disable":false
 			},			
 			{
 				"name": "ILinkChannel",
@@ -80,7 +80,7 @@
 					2
 				],
 				"healthCheck": true,
-				"disable": false
+				"disable": true
 			}		
 		],
 		"delayOnException": 5000,

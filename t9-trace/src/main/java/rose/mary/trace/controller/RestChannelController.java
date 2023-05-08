@@ -39,23 +39,23 @@ public class RestChannelController {
 	
 	/**
 	 * <pre> 
-	 * REST 방식 트레킹 수집 서비스 
+	 * REST 방식 트레킹 수집 서비스 (데이터 검증 테스트 용도)
 	 * 주) 비동기 방식이므로 트레킹의 디비에 적재 여부와 무관하게 결과를 리턴한다.
 	 *    즉 디비 적재에 실패해도 트래킹 요청이 정상적으로 수신되기 만 하면 응답은 OK이다.    
 	 * url          : http://127.0.0.1:8090/traces
 	 * HTTP.Method  : POST
-	 * params       : 
+	 * params       :   JSON 포멧 배열 
 	 * [{
 	 *	"integrationId"	: "EG_EGSSRM_BD_001", 	//인터페이스ID
 	 *	"originHostId"	: "testhost01",       	//원호스트아이디(송신,허브,수신 이 모두 동일한 값이어야 한다.)
-	 *	"date"          : "20200320170050748",	//인터페이스발생일(송신,허브,수신 이 모두 동일한 값이어야 한다.)
+	 *	"date"          : "20200320170050748",	//인터페이스발생일(송신,허브,수신 이 모두 동일한 값이어야 한다.) 17자리 날짜 형식 yyyymmddHH24missSSS
 	 *	"processId"     : "Sender01",         	//인터페이스 프로세스ID (송신,허브,수신 이 각기 틀린 값으로 설정)
-	 *	"processDate"	: "20200320170050763",	//인터페이스 프로세스 시작 시간 
-	 *	"processEndDate": "20200320170050763",	//인터페이스 프로세스 종료 시간 
+	 *	"processDate"	: "20200320170050763",	//인터페이스 프로세스 시작 시간 17자리 날짜 형식 yyyymmddHH24missSSS
+	 *	"processEndDate": "20200320170050763",	//인터페이스 프로세스 종료 시간 17자리 날짜 형식 yyyymmddHH24missSSS
 	 *	"type"          : "RCVR",             	//송신 : SNDR, 허브 : BRKR, 수신 : RCVR
 	 *	"hostId"        : "testhost02",       	//인터페이스 프로세스가 실행된 노드의 호스트ID
-	 *	"status"        : "00",                 //프로세스가 처리 결과 
-	 *	"todoNodeCount" : 1,                    //인터페이스 수신노드 개 수(모든 수신노드가 처리되면 인터페이스가 완료된 것으로 처리한다.)
+	 *	"status"        : "00",                 //프로세스가 처리 결과 : "00" : 정상, "99" : 에러  
+	 *	"todoNodeCount" : 1,                    //인터페이스의 수신되어야 할 노드 개 수(모든 수신노드가 처리되면 인터페이스가 완료된 것으로 처리한다.)
 	 *	"errorCode"     : "",                   //노드 처리 시 발생된 에러의 코드 값 
 	 *	"errorMessage"  : "",                   //노드 처리 시 발생된 에러의 내용 
 	 *	"recordCount"   : "0",                  //처리 데이터의 레코드 수 

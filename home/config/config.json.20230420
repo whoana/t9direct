@@ -1,5 +1,5 @@
 {
-	"type": "B",
+	"type": "A",
 	"loadNotFinishedState": true,
 	"loadNotFinishedStateDurationMin": -60,
 	"channelManagerConfig": {
@@ -30,7 +30,7 @@
 		"channelConfigs": [
 			{
 				"name": "RestChannel",
-				"threadCount": 1,
+				"threadCount": 2,
 				"type": 2,
 				"hostName": "localhost",
 				"qmgrName": "",
@@ -49,11 +49,16 @@
 				"delayForNoMessage": 1000,
 				"commitCount": 100,
 				"cacheIndex": [
-					0,1,2
+					0,
+					1,
+					2,
+					3
 				],
 				"healthCheck": false,
-				"disable":true
-			},			
+				"disable":false
+			}
+			/*
+			,			
 			{
 				"name": "ILinkChannel",
 				"threadCount": 3,
@@ -81,7 +86,8 @@
 				],
 				"healthCheck": true,
 				"disable": false
-			}		
+			}
+			*/
 		],
 		"delayOnException": 5000,
 		"translateMsgOnException": false
