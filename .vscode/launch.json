@@ -41,7 +41,7 @@
             "request": "launch",
             "mainClass": "rose.mary.trace.testcode.CacheSizeChecker",
             "projectName": "t9-trace",
-            "vmArgs": "-Drose.mary.home=/Users/whoana/DEV/workspace-vs-refactoring/t9/home"
+            "vmArgs": "-Drose.mary.home=/Users/whoana/DEV/workspaces/vsc/t9direct/home"
         },
         {
             "type": "java",
@@ -49,7 +49,7 @@
             "request": "launch",
             "mainClass": "rose.mary.trace.testcode.MQChannelTest",
             "projectName": "t9-trace",
-            "vmArgs": "-Drose.mary.home=/Users/whoana/DEV/workspace-vs-refactoring/t9/home"
+            "vmArgs": "-Drose.mary.home=/Users/whoana/DEV/workspaces/vsc/t9direct/home"
         },
         {
             "type": "java",
@@ -57,7 +57,7 @@
             "request": "launch",
             "mainClass": "rose.mary.trace.testcode.KillTest",
             "projectName": "t9-trace",
-            "vmArgs": "-Drose.mary.home=/Users/whoana/DEV/workspace-vs-refactoring/t9/home"
+            "vmArgs": "-Drose.mary.home=/Users/whoana/DEV/workspaces/vsc/t9direct/home"
         },
         {
             "type": "java",
@@ -74,7 +74,7 @@
             "mainClass": "rose.mary.trace.T9",
             "projectName": "t9-trace",
             "args": "",
-            "vmArgs": "-Drose.mary.home=/Users/whoana/DEV/workspace-vs-refactoring/t9/home -Dstate.trace=true -Dspring.profiles.active=development -Dspring.config.location=/Users/whoana/DEV/workspace-vs-refactoring/t9/home/config/application.yml -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=64128 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=t9-trace",
+            "vmArgs": "-Drose.mary.home=/Users/whoana/DEV/workspaces/vsc/t9direct/home -Dstate.trace=true -Dspring.profiles.active=development -Dspring.config.location=/Users/whoana/DEV/workspaces/vsc/t9direct/home/config/application.yml -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=64128 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=t9-trace",
             "envFile": "${workspaceFolder}/.env"
         }
     ]
