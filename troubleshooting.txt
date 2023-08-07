@@ -1,0 +1,62 @@
+2023-07-28 08:38:07.060 DEBUG 7903 --- [l.DirectLoader1] rose.mary.trace.loader.T9Loader          : have no msg to trace
+2023-07-28 08:38:07.470 DEBUG 7903 --- [l.DirectLoader2] rose.mary.trace.loader.T9Loader          : have no msg to trace
+2023-07-28 08:51:11.625 ERROR 7903 --- [l.DirectLoader2] rose.mary.trace.loader.T9Loader          : JMSException
+
+javax.jms.JMSException: Failed to send data to the server: java.io.IOException: Broken pipe
+-- ILAPI FUNCTION TRACE --
+[28/07/2023 08:51:11.620 ILSession.sendILMessage(byte[] header, byte[] body)] ILSession.sendBytes: Try to send header.
+[28/07/2023 08:51:11.620 ILSession.sendILMessage(byte[] header, byte[] body)] ILSession.sendBytes: Caught exception.
+
+        at com.mococo.ILinkAPI.jms.ILSession.sendILMessage(ILSession.java:1458)
+        at com.mococo.ILinkAPI.jms.ILSession.rollback(ILSession.java:636)
+        at rose.mary.trace.core.helper.module.mte.ILinkMsgHandler.rollback(ILinkMsgHandler.java:204)
+        at rose.mary.trace.loader.T9Loader.rollback(T9Loader.java:449)
+        at rose.mary.trace.loader.T9Loader.run(T9Loader.java:346)
+        at java.lang.Thread.run(Thread.java:750)
+
+2023-07-28 08:51:11.626 ERROR 7903 --- [l.DirectLoader2] r.m.t.c.h.module.mte.ILinkMsgHandler     : 
+
+javax.jms.JMSException: 
+-- ILAPI FUNCTION TRACE --
+[28/07/2023 08:51:11.626 ILSession.sendILMessage(byte[] header, byte[] body)] ILSession.sendBytes: Try to send header.
+[28/07/2023 08:51:11.626 ILSession.sendILMessage(byte[] header, byte[] body)] ILSession.sendBytes: Caught exception.
+[28/07/2023 08:51:11.626 ILSession.sendILMessage(byte[] header, byte[] body)] ILSession.sendBytes: Caught exception.
+
+        at com.mococo.ILinkAPI.jms.ILSession.ping(ILSession.java:205)
+        at com.mococo.ILinkAPI.jms.ILSession.isConnected(ILSession.java:213)
+        at rose.mary.trace.core.helper.module.mte.ILinkMsgHandler.ping(ILinkMsgHandler.java:250)
+        at rose.mary.trace.loader.T9Loader.run(T9Loader.java:353)
+        at java.lang.Thread.run(Thread.java:750)
+
+javax.jms.JMSException: 
+-- ILAPI FUNCTION TRACE --
+[28/07/2023 08:51:11.627 ILSession.sendILMessage(byte[] header, byte[] body, long timeout)] ILSession.sendBytes: Try to send header.
+[28/07/2023 08:51:11.627 ILSession.sendILMessage(byte[] header, byte[] body, long timeout)] ILSession.sendBytes: Caught exception.
+[28/07/2023 08:51:11.627 ILSession.sendILMessage(byte[] header, byte[] body, long timeout)] ILSession.sendBytes: Caught exception.
+
+        at com.mococo.ILinkAPI.jms.ILSession.close(ILSession.java:764)
+        at rose.mary.trace.core.helper.module.mte.ILinkMsgHandler.close(ILinkMsgHandler.java:211)
+        at rose.mary.trace.loader.T9Loader.run(T9Loader.java:355)
+        at java.lang.Thread.run(Thread.java:750)
+2023-07-28 08:51:11.629  INFO 7903 --- [l.DirectLoader2] rose.mary.trace.loader.T9Loader          : initailizing channel:ILinkChannel.DirectLoader2
+2023-07-28 08:51:11.668  INFO 7903 --- [l.DirectLoader2] rose.mary.trace.loader.T9Loader          : finish initailizing channel:ILinkChannel.DirectLoader2
+2023-07-28 08:51:11.668 ERROR 7903 --- [l.DirectLoader2] rose.mary.trace.loader.T9Loader          : 
+
+javax.jms.JMSException: 
+-- ILAPI FUNCTION TRACE --
+Caught exception.
+
+        at com.mococo.ILinkAPI.jms.ILSession.readILMessage(ILSession.java:2183)
+        at com.mococo.ILinkAPI.jms.ILMessageConsumer.receiveHelper(ILMessageConsumer.java:218)
+        at com.mococo.ILinkAPI.jms.ILMessageConsumer.receive(ILMessageConsumer.java:132)
+        at rose.mary.trace.core.helper.module.mte.ILinkMsgHandler.get(ILinkMsgHandler.java:183)
+        at rose.mary.trace.loader.T9Loader.trace(T9Loader.java:419)
+        at rose.mary.trace.loader.T9Loader.run(T9Loader.java:252)
+        at java.lang.Thread.run(Thread.java:750)
+
+2023-07-28 08:51:12.296  WARN 7903 --- [l-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=13m24s556ms).
+2023-07-28 08:51:12.296 DEBUG 7903 --- [l-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Before cleanup stats (total=14, active=0, idle=14, waiting=0)
+2023-07-28 08:51:12.296 DEBUG 7903 --- [l-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - After cleanup  stats (total=14, active=0, idle=14, waiting=0)
+2023-07-28 08:51:17.674 DEBUG 7903 --- [l.DirectLoader2] rose.mary.trace.loader.T9Loader          : have no msg to trace
+2023-07-28 08:51:18.678 DEBUG 7903 --- [l.DirectLoader2] rose.mary.trace.loader.T9Loader          : have no msg to trace
+2023-07-28 08:51:19.685 DEBUG 7903 --- [l.DirectLoader2] rose.mary.trace.loader.T9Loader          : have no msg to trace

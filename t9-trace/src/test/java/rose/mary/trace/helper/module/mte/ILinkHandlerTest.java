@@ -3,6 +3,9 @@
  */
 package rose.mary.trace.helper.module.mte;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -14,8 +17,10 @@ import javax.jms.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pep.per.mint.common.util.Util;
 import rose.mary.trace.core.helper.module.mte.ILinkMsgHandler;
 import rose.mary.trace.core.helper.module.mte.MQMsgHandler;
+import rose.mary.trace.core.helper.module.mte.MsgHandler;
 import rose.mary.trace.core.monitor.ThroughputMonitor;
 
 /**
@@ -32,6 +37,97 @@ public class ILinkHandlerTest {
 	static Logger logger = LoggerFactory.getLogger(ILinkHandlerTest.class);
 
 	static AtomicInteger totoalMsgCnt = new AtomicInteger(0);
+	
+	public static void main(String args[]) {
+		
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+			Date d = sdf.parse("20230727102009");
+			System.out.println(d.toString());
+
+			SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			System.out.println(sdf3.format(d));
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public static void mainb(String args[]) {
+		try { 
+			 
+			
+			// new GetMessageHandler().start("gmh1");
+			// Thread.sleep(1000);
+			// new GetMessageHandler().start("gmh2");
+			// Thread.sleep(1000);
+			// new GetMessageHandler().start("gmh3");
+			// Thread.sleep(1000);
+			// new GetMessageHandler().start("gmh4");
+			// Thread.sleep(1000);
+			// new GetMessageHandler().start("gmh5");
+			// Thread.sleep(1000);
+			// new GetMessageHandler().start("gmh6");
+			// Thread.sleep(1000);
+			// new GetMessageHandler().start("gmh7");
+			// Thread.sleep(1000);
+			// new GetMessageHandler().start("gmh8");
+			// Thread.sleep(1000);
+			// new GetMessageHandler().start("gmh9");
+			// Thread.sleep(1000);
+		} catch (Throwable e) { 
+			e.printStackTrace();
+		}
+
+	}
+
+	static class GetMessageHandler implements Runnable {
+		Thread thread;
+		ILinkMsgHandler handler;
+		int waitTime = 1000;
+		String qmgrName = "TEST";
+		String hostName = "10.10.1.10";
+		int port = 11111;
+		String channelName = "IIP.SVRCONN";
+		String queueName = "TEST.LQ"; 
+
+		public void start(String name) throws Exception{
+			
+			while(true){
+				try{
+					handler = new ILinkMsgHandler(qmgrName, hostName, port, channelName);
+					handler.open(queueName, MsgHandler.Q_QPEN_OPT_GET); 
+					break;
+				}catch(Exception e){
+					Thread.sleep(1000);
+					System.out.println(name + " retry iLink open");
+				}
+			}
+			thread = new Thread(this, name);
+			thread.start();
+		}
+		
+		@Override
+		public void run() {
+			while(true){
+				try{
+					Object msg = handler.get(waitTime);
+					if(msg != null){
+						System.out.println(Thread.currentThread().getName() + " " + msg.toString());	
+					}
+					System.out.println(Thread.currentThread().getName() + " finished to get msg");
+				}catch(Exception e){
+					e.printStackTrace();
+				}finally{
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {  
+					}
+				}
+			}
+		}
+		
+	}
 
 	public static void main2(String args[]) {
 		try {
@@ -134,16 +230,16 @@ public class ILinkHandlerTest {
 
 	}
 
-	public static void main(String args[]) {
+	public static void main4(String args[]) {
 		try {
 			int testCount = 1;
 
 			int waitTime = 0;
-			String qmgrName = "IIP";
+			String qmgrName = "TEST";
 			String hostName = "10.10.1.10";
-			int port = 10000;
+			int port = 11111;
 			String channelName = "IIP.SVRCONN";
-			String queueName = "TRACE.EQ";
+			String queueName = "TEST.LQ";
 			String userId = null;
 			String password = null;
 			int ccsid = 1208;
@@ -161,8 +257,8 @@ public class ILinkHandlerTest {
 
 							ILinkMsgHandler handler = new ILinkMsgHandler(qmgrName, hostName, port, channelName);
 
-							handler.open(queueName, MQMsgHandler.Q_QPEN_OPT_GET);
-
+							handler.open(queueName, MsgHandler.Q_OPEN_OPT_PUT);
+							//handler.open(queueName, MQMsgHandler.Q_QPEN_OPT_GET);
 							// System.out.println(Thread.currentThread().getName() + " start");
 
 							int commitCount = 100;

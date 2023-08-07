@@ -128,7 +128,7 @@ public class TraceMsgGenerator {
 			throw new Exception("NotFounMode:" + module);
 		}
 		tmh.open(queueName, MsgHandler.Q_OPEN_OPT_PUT);
-
+		  
 	}
 
 	List<String> keys = new ArrayList<String>();

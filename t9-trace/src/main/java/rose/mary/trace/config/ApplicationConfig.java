@@ -83,8 +83,8 @@ public class ApplicationConfig {
 	@Autowired
 	ApplicationContext applicationContext;
 
-	@Autowired
-	ConfigurationManager configurationManager;
+	//@Autowired
+	//ConfigurationManager configurationManager;
 
 	// @Autowired
 	// TraceService traceService;

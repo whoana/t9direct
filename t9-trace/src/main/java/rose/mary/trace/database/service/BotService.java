@@ -85,6 +85,8 @@ public class BotService {
 			bot.setRegDate(date);
 			bot.setModDate(date);
 			int res = botMapper.restore(bot);
+
+			loadSms(bot, null);
 		}
 	}
 
@@ -151,7 +153,12 @@ public class BotService {
 						bot.setRegDate(date);
 						bot.setModDate(date);
 						// logger.debug("add batchItem:" + Util.toJSONString(bot));
+
+						
 						int res = session.update("rose.mary.trace.database.mapper.m01.BotMapper.restore", bot);
+
+						// sms 대상 에러 인터페이스 로드 
+						loadSms(bot, session);						
 					}
 					state.setLoaded(true);
 					// updateStates.put(state.getBotId(), state);
@@ -259,6 +266,9 @@ public class BotService {
 					bot.setModDate(date);
 					// logger.debug("add batchItem:" + Util.toJSONString(bot));
 					int res = session.update("rose.mary.trace.database.mapper.m01.BotMapper.restore", bot);
+
+					// sms 대상 에러 인터페이스 로드 
+					loadSms(bot, session);	
 				}
 				state.setLoaded(true);
 				// updateStates.put(state.getBotId(), state);
@@ -382,6 +392,31 @@ public class BotService {
 			if (session != null)
 				session.close();
 		}
+	}
+
+
+	boolean loadSmsOn = true;
+
+	public void setLoadSmsOn(boolean loadSmsOn) {
+		this.loadSmsOn = loadSmsOn;
+	}
+
+	public boolean getLoadSmsOn(){
+		return this.loadSmsOn;
+	}
+
+	private void loadSms(Bot bot, SqlSession session) {	
+		try{
+			if(loadSmsOn && State.FAIL.equalsIgnoreCase(bot.getState().getStatus())){
+				if(session != null) {
+					int res = session.update("rose.mary.trace.database.mapper.m01.BotMapper.loadSms", bot);
+				} else {
+					int res = botMapper.loadSms(bot);
+				}
+			}
+		}catch(Exception e){
+			logger.error("sms 로드는 실패하였으나 로깅만 해둔다.", e);
+		}						
 	}
 
 	/**

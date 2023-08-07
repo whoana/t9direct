@@ -18,10 +18,10 @@ import org.infinispan.CacheCollection;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.transaction.TransactionMode;
-import org.mapdb.DB;
-import org.mapdb.DBMaker;
-import org.mapdb.HTreeMap;
-import org.mapdb.Serializer;
+// import org.mapdb.DB;
+// import org.mapdb.DBMaker;
+// import org.mapdb.HTreeMap;
+// import org.mapdb.Serializer;
 
 import pep.per.mint.common.util.Util;
 
@@ -35,7 +35,7 @@ import pep.per.mint.common.util.Util;
  * @date Sep 26, 2019
  */
 public class MapdbSample {
-
+	/*
 	public static void fileDb() {
 
 		try {
@@ -70,49 +70,13 @@ public class MapdbSample {
 			map.values().iterator().forEachRemaining(consumer);
 			System.out.println("elapsed2:" + (System.currentTimeMillis() - elapsed));
 			System.out.println("size:" + map.size());
-
-			/*
-			 * NavigableSet<String> set =
-			 * db.treeSet("dist").serializer(Serializer.STRING).createOrOpen();
-			 * set.clear();
-			 * int test = 10000;
-			 * long elapsed = System.currentTimeMillis();
-			 * for(int i = 0 ; i < test ; i ++) set.add("whoana"+i);
-			 * System.out.println("elapsed1:"+(System.currentTimeMillis() - elapsed));
-			 * 
-			 * 
-			 * elapsed = System.currentTimeMillis();
-			 * 
-			 * Consumer<String> consumer = new Consumer<String>(){
-			 * int cnt = 0;
-			 * 
-			 * @Override
-			 * public void accept(String t) {
-			 * // TODO Auto-generated method stub
-			 * cnt ++;
-			 * }
-			 * public int getCnt() {
-			 * return cnt;
-			 * }
-			 * 
-			 * };
-			 * 
-			 * set.iterator().forEachRemaining(consumer);
-			 * // while(true) {
-			 * // String item = set.pollFirst();
-			 * // if(item == null) break;
-			 * // //System.out.println(item);
-			 * // }
-			 * System.out.println("elapsed2:"+(System.currentTimeMillis() - elapsed));
-			 * System.out.println("size:" + set.size());
-			 */
-
 			db.close();
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+	*/
 
 	public static void infinispan() {
 

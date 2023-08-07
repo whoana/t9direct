@@ -28,9 +28,13 @@ public interface BotMapper {
 
 	public int updateUnmatch(Unmatch unmatch) throws Exception;
 
-	public State getState(@Param("integrationId") String integrationId, @Param("trackingDate") String trackingDate,
-			@Param("orgHostId") String orgHostId) throws Exception;
+	public State getState(
+		@Param("integrationId") String integrationId, 
+		@Param("trackingDate") String trackingDate,
+		@Param("orgHostId") String orgHostId) throws Exception;
 
 	public List<State> getNotFinishedStates(@Param("fromDate") String fromDate, @Param("toDate") String toDate);
+
+    public int loadSms(Bot bot) throws Exception;
 
 }

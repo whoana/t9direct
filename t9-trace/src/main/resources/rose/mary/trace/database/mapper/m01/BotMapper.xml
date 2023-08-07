@@ -6,6 +6,63 @@
   	<!--
   	<cache/>
   	-->
+
+	<update id="loadSms" parameterType="rose.mary.trace.core.data.common.Bot">
+		<choose>
+			<when test="_databaseId == 'postgresql'">
+				<![CDATA[
+				with UPDATE_TABLE as (
+					update TOP0907 
+					set 
+						REG_DATE = #{regDate, jdbcType=VARCHAR}
+					where 
+						INTEGRATION_ID= #{state.integrationId,		jdbcType=VARCHAR} and
+						TRACKING_DATE = #{state.trackingDate,	 	jdbcType=VARCHAR} and		
+						ORG_HOST_ID   = #{state.orgHostId,			jdbcType=VARCHAR}						
+					returning *
+				)
+				insert into TOP0907 (
+					 INTEGRATION_ID 
+					,TRACKING_DATE
+					,ORG_HOST_ID					         			
+					,REG_DATE 			
+				)
+				select 
+					 #{state.integrationId,		jdbcType=VARCHAR}
+					,#{state.trackingDate,	 	jdbcType=VARCHAR}
+					,#{state.orgHostId,			jdbcType=VARCHAR}
+					,#{regDate, 				jdbcType=VARCHAR}
+				where not exists (select * from UPDATE_TABLE)
+				]]>
+			</when>
+			<otherwise>
+				<![CDATA[
+				merge into TOP0907 a
+				using DUAL
+				on (
+					a.INTEGRATION_ID= #{state.integrationId,	jdbcType=VARCHAR} and
+					a.TRACKING_DATE = #{state.trackingDate,	 	jdbcType=VARCHAR} and		
+					a.ORG_HOST_ID   = #{state.orgHostId,		jdbcType=VARCHAR}					
+				)
+				when matched then
+				update set a.REG_DATE = #{regDate, jdbcType=VARCHAR}			
+				when not matched then 
+				insert (             
+					 a.INTEGRATION_ID 
+					,a.TRACKING_DATE
+					,a.ORG_HOST_ID					         			
+					,a.REG_DATE 
+				) values (                            
+					 #{state.integrationId,		jdbcType=VARCHAR}
+					,#{state.trackingDate,	 	jdbcType=VARCHAR}
+					,#{state.orgHostId,			jdbcType=VARCHAR}
+					,#{regDate, 				jdbcType=VARCHAR}
+				) 
+				]]>
+			</otherwise>
+		</choose>		
+	</update>
+
 	<update id="restore" parameterType="rose.mary.trace.core.data.common.Bot">
 		<choose>
 			<when test="_databaseId == 'postgresql'">

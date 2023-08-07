@@ -3,6 +3,8 @@ package rose.mary.trace.loader;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.jms.JMSException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -149,9 +151,7 @@ public class T9Loader implements Runnable {
 
     public void start() throws Exception {
 
-        if (thread != null && thread.isAlive())
-            stop();
-        thread = new Thread(this, name);
+        if (thread != null && thread.isAlive()) stop();
         state = STATE_INIT;
         while (true) {
             try {
@@ -168,8 +168,9 @@ public class T9Loader implements Runnable {
                 }
             }
         }
-
+        
         logger.info(Util.join("success to initailize channel:", name));
+        thread = new Thread(this, name);
         thread.start();
 
     }
@@ -182,9 +183,8 @@ public class T9Loader implements Runnable {
             mh = new ILinkMsgHandler(qmgrName, hostName, port, channelName);
         } else {
             throw new Exception("NotFounMode:" + module);
-        }
-
-        mh.open(queueName, MsgHandler.Q_QPEN_OPT_GET);
+        } 
+        mh.open(queueName, MsgHandler.Q_QPEN_OPT_GET);     
     }
 
     public void stop() throws Exception {
@@ -269,6 +269,8 @@ public class T9Loader implements Runnable {
                         trace.setStateCheckHandlerId(stateCheckerId);
                         traceList.add(trace);
                         stateHandler.handleState(trace, stateList);
+                    }else{
+                        // logger.debug("have no msg to trace");
                     }
                 }
             } catch (RequiredFieldException re) {
@@ -339,13 +341,55 @@ public class T9Loader implements Runnable {
                     // return;
                     break;
                 }
+            } catch( JMSException e){
+                 try {
+                    rollback();
+                } catch (Exception se) {
+                    logger.error("", se);
+                }
 
+                //logic for reconnect 
+                {
+                    boolean ok = mh.ping();
+                    if(!ok){
+                        mh.close();                        
+                        while (true) {
+                            try {
+                                logger.info(Util.join("initailizing channel:", name));
+                                initialize();
+                                logger.info(Util.join("finish initailizing channel:", name));
+                                break;
+                            } catch (Exception se) {
+                                logger.error("fail to initailize channel:", name, " error:", e);
+                                try {
+                                    Thread.sleep(delayOnException);
+                                } catch (InterruptedException ie) {
+                                    logger.error("", ie);
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+                if (channelExceptionHandler != null) {
+                    channelExceptionHandler.handleException("", e);
+                } else {
+                    logger.error("", e);
+                }
+
+                try {
+                    Thread.sleep(delayOnException);
+                } catch (InterruptedException se) {
+                    isShutdown = true;
+                    break;
+                }
             } catch (Exception e) {
 
                 try {
                     rollback();
-                } catch (Exception e2) {
-                    logger.error("", e2);
+                } catch (Exception se) {
+                    logger.error("", se);
                 }
 
                 if (channelExceptionHandler != null) {
@@ -356,9 +400,8 @@ public class T9Loader implements Runnable {
 
                 try {
                     Thread.sleep(delayOnException);
-                } catch (InterruptedException e1) {
+                } catch (InterruptedException se) {
                     isShutdown = true;
-                    // return;
                     break;
                 }
 

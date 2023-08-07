@@ -11,7 +11,7 @@ t9-install-linux
 t9-install-linux/lib
 t9-install-widows
 t9-install-linux.zip
-
+.DS_Store
 home/lib/t9-console-1.0.0.jar
 home/lib/t9-trace-1.0.0.jar
 home/caches.tar
@@ -28,3 +28,4 @@ home/.tmp.log.swp
 home/tmp.txt
 t9-trace/FFDC
 t9-install-linux.tar
+t9-trace/src/main/java/rose/mary/trace/.DS_Store

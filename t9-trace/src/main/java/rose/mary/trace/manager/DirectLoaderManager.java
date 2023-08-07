@@ -98,7 +98,7 @@ public class DirectLoaderManager {
     /**
      * @throws Exception
      */
-    public synchronized void startLoaders() throws Exception {
+    public void startLoaders() throws Exception {
 
         try {
 

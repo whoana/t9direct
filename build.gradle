@@ -5,8 +5,6 @@
  * For more details take a look at the Java Libraries chapter in the Gradle
  * User Manual available at https://docs.gradle.org/6.0/userguide/java_library_plugin.html
  */
-
-
 description = 'project t9'
 allprojects {
 	group = 'rose.mary.trace'
@@ -14,7 +12,7 @@ allprojects {
 
 
 subprojects {
-    apply plugin:'maven' //for gradle version 6.x
+    // apply plugin:'maven' //for gradle version 6.x
     apply plugin:'maven-publish'
 	apply plugin:'java'
 
