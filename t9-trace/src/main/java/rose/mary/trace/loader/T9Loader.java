@@ -355,12 +355,12 @@ public class T9Loader implements Runnable {
                         mh.close();                        
                         while (true) {
                             try {
-                                logger.info(Util.join("initailizing channel:", name));
+                                logger.info("initailizing channel:{}", name);
                                 initialize();
-                                logger.info(Util.join("finish initailizing channel:", name));
+                                logger.info("finish initailizing channel:{}", name);
                                 break;
                             } catch (Exception se) {
-                                logger.error("fail to initailize channel:", name, " error:", e);
+                                logger.error("fail to initailize channel:{}", name, e);
                                 try {
                                     Thread.sleep(delayOnException);
                                 } catch (InterruptedException ie) {
